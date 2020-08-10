@@ -1,0 +1,30 @@
+#slider {
+    border: 2px solid grey;
+    border-radius: 10px; 
+    width: 200px;
+    height: 10px;
+    margin-top: 300px;
+    position: relative;
+}
+
+#slider #runner{
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    background-color: grey;
+    border: 2px solid black;
+    border-radius: 10px; 
+    position: absolute;
+    top: -5px;
+    left: 0px;
+}
+
+#slider #runner .dragged {
+    background-color: blue !important;
+}
+
+.middle{
+    margin: auto;
+}
+
+/*# sourceMappingURL=/Slider.2746bb4a.css.map */
