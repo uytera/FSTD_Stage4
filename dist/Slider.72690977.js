@@ -11214,12 +11214,14 @@ var $ = require("jquery");
 
 $(document).ready(function () {
   var runnerWidth = $('#runner').outerWidth() / 2;
+  var leftBorder = $("#slider").offset().left;
+  var rightBorder = leftBorder + $("#slider").outerWidth(); //alert(leftBorder + " " + rightBorder);
 
-  function RunnerMove() {
+  function runnerMove() {
     $("#runner").addClass('dragged');
     $('#runner').parents().on('mousemove', function (e) {
       $('.dragged').offset({
-        left: e.pageX - runnerWidth
+        left: mouseMove(e)
       });
     });
     $('#runner').parents().on('mouseup', function (e) {
@@ -11227,8 +11229,22 @@ $(document).ready(function () {
     });
   }
 
+  ;
+
+  function mouseMove(e) {
+    if (e.pageX - runnerWidth <= leftBorder) {
+      return leftBorder;
+    }
+
+    if (e.pageX + runnerWidth >= rightBorder) {
+      return rightBorder - runnerWidth * 2;
+    }
+
+    return e.pageX - runnerWidth;
+  }
+
   $('body').on('mousedown', "#slider", function (e) {
-    RunnerMove();
+    runnerMove();
     $("#runner").parents().on('mousedown', function (e) {
       $('.dragged').offset({
         left: e.pageX - runnerWidth
@@ -11236,7 +11252,7 @@ $(document).ready(function () {
     });
   });
   $('body').on('mousedown', "#runner", function (e) {
-    RunnerMove();
+    runnerMove();
   });
 });
 },{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -11267,7 +11283,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54054" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51036" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
