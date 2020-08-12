@@ -2,10 +2,35 @@ import $ = require("jquery");
 
 $(document).ready(function () {
     var runnerWidth = $('#runner').outerWidth()/2;
-    var leftBorder = $("#slider").offset().left;
-    var rightBorder = leftBorder + $("#slider").outerWidth();
+    var leftBorder = $("#slider").offset().left - runnerWidth;
+    var rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
+    var currentPosition = leftBorder;
+    var step = stepCalculate(10);
 
-    //alert(leftBorder + " " + rightBorder);
+    $(window).resize(function(){
+        leftBorder = $("#slider").offset().left  - runnerWidth;
+        rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
+    });
+
+    function stepCalculate(divisions){
+        return $("#slider").outerWidth() / divisions;
+    }
+    
+    function mouseMove(e){
+        if(e.pageX - runnerWidth <= leftBorder){
+            return leftBorder;
+        }
+        if(e.pageX + runnerWidth >= rightBorder){
+            return rightBorder - runnerWidth*2;
+        }
+        if(e.pageX <= currentPosition - step){
+            currentPosition -= step;
+        }
+        if(e.pageX >= currentPosition  + step){
+            currentPosition += step;
+        }
+        return currentPosition - runnerWidth;
+    }
 
     function runnerMove(){
         $("#runner").addClass('dragged');
@@ -21,22 +46,12 @@ $(document).ready(function () {
         });
     };
 
-    function mouseMove(e){
-        if(e.pageX - runnerWidth <= leftBorder){
-            return leftBorder;
-        }
-        if(e.pageX + runnerWidth >= rightBorder){
-            return rightBorder - runnerWidth*2;
-        }
-        return e.pageX - runnerWidth;
-    }
-
     $('body').on('mousedown', "#slider", function (e) {
         runnerMove();
 
         $("#runner").parents().on('mousedown', function(e){
             $('.dragged').offset({
-                left: e.pageX - runnerWidth
+                left: ((e.pageX - runnerWidth) / 12) * 12
             })
         });
     });
