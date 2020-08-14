@@ -11212,67 +11212,165 @@ Object.defineProperty(exports, "__esModule", {
 
 var $ = require("jquery");
 
+var jQuery = require("jquery/dist/jquery");
+
+;
+
+(function ($, window, document, undefined) {
+  var pluginName = 'runner',
+      defaults = {
+    propertyName: "value"
+  }; // конструктор плагина
+
+  function Plugin(element, options) {
+    this.element = element;
+    this.options = $.extend({}, defaults, options);
+    this._defaults = defaults;
+    this._name = pluginName; //alert(element.id);
+
+    this.init();
+  } // Тут пишем код самого плагина
+  // Здесь у нас уже есть доступ к DOM, и входным параметрам
+  // через объект, типа this.element и this.options
+
+
+  Plugin.prototype.init = function () {
+    var sliderElement = this.element;
+    var divRunner = document.createElement('div');
+    sliderElement.id = "slider";
+    divRunner.id = "runner";
+    sliderElement.appendChild(divRunner);
+    var sliderElementJ = $(sliderElement);
+    var divRunnerJ = $(divRunner);
+    var runnerWidth = divRunnerJ.outerWidth() / 2;
+    var leftBorder = sliderElementJ.offset().left - runnerWidth;
+    var rightBorder = leftBorder + sliderElementJ.outerWidth() + runnerWidth * 2;
+    var currentPosition = leftBorder;
+    var step = stepCalculate(10);
+    divRunnerJ.offset({
+      left: leftBorder
+    });
+    $(window).resize(function () {
+      leftBorder = sliderElementJ.offset().left - runnerWidth;
+      rightBorder = leftBorder + sliderElementJ.outerWidth() + runnerWidth * 2;
+    });
+
+    function stepCalculate(divisions) {
+      return sliderElementJ.outerWidth() / divisions;
+    }
+
+    function mouseMove(e) {
+      if (e.pageX - runnerWidth <= leftBorder) {
+        return leftBorder;
+      }
+
+      if (e.pageX + runnerWidth >= rightBorder) {
+        return rightBorder - runnerWidth * 2;
+      }
+
+      if (e.pageX <= currentPosition - step) {
+        currentPosition -= step;
+      }
+
+      if (e.pageX >= currentPosition + step) {
+        currentPosition += step;
+      }
+
+      return currentPosition - runnerWidth;
+    }
+
+    function runnerMove() {
+      divRunnerJ.addClass('dragged');
+      divRunnerJ.parents().on('mousemove', function (e) {
+        $('.dragged').offset({
+          left: mouseMove(e)
+        });
+      });
+      divRunnerJ.parents().on('mouseup', function (e) {
+        divRunnerJ.removeClass('dragged');
+      });
+    }
+
+    ;
+    $('body').on('mousedown', "#slider", function (e) {
+      runnerMove();
+      divRunnerJ.parents().on('mousedown', function (e) {
+        $('.dragged').offset({
+          left: (e.pageX - runnerWidth) / 12 * 12
+        });
+      });
+    });
+    $('body').on('mousedown', "#runner", function (e) {
+      runnerMove();
+    });
+  }; // Простой декоратор конструктора,
+  // предотвращающий дублирование плагинов
+
+
+  $.fn[pluginName] = function (options) {
+    return this.each(function () {
+      if (!$.data(this, 'plugin_' + pluginName)) {
+        $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
+      }
+    });
+  };
+})(jQuery, window, document);
+
 $(document).ready(function () {
-  var runnerWidth = $('#runner').outerWidth() / 2;
-  var leftBorder = $("#slider").offset().left - runnerWidth;
-  var rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
-  var currentPosition = leftBorder;
-  var step = stepCalculate(10);
-  $(window).resize(function () {
-    leftBorder = $("#slider").offset().left - runnerWidth;
-    rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
-  });
-
-  function stepCalculate(divisions) {
-    return $("#slider").outerWidth() / divisions;
-  }
-
-  function mouseMove(e) {
-    if (e.pageX - runnerWidth <= leftBorder) {
-      return leftBorder;
-    }
-
-    if (e.pageX + runnerWidth >= rightBorder) {
-      return rightBorder - runnerWidth * 2;
-    }
-
-    if (e.pageX <= currentPosition - step) {
-      currentPosition -= step;
-    }
-
-    if (e.pageX >= currentPosition + step) {
-      currentPosition += step;
-    }
-
-    return currentPosition - runnerWidth;
-  }
-
-  function runnerMove() {
-    $("#runner").addClass('dragged');
-    $('#runner').parents().on('mousemove', function (e) {
-      $('.dragged').offset({
-        left: mouseMove(e)
-      });
-    });
-    $('#runner').parents().on('mouseup', function (e) {
-      $('#runner').removeClass('dragged');
-    });
-  }
-
-  ;
-  $('body').on('mousedown', "#slider", function (e) {
-    runnerMove();
-    $("#runner").parents().on('mousedown', function (e) {
-      $('.dragged').offset({
-        left: (e.pageX - runnerWidth) / 12 * 12
-      });
-    });
-  });
-  $('body').on('mousedown', "#runner", function (e) {
-    runnerMove();
-  });
+  // var runnerWidth = $('#runner').outerWidth()/2;
+  // var leftBorder = $("#slider").offset().left - runnerWidth;
+  // var rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
+  // var currentPosition = leftBorder;
+  // var step = stepCalculate(10);
+  $('.middle').runner(); // $('#runner').offset({
+  //     left: leftBorder
+  // })
+  // $(window).resize(function(){
+  //     leftBorder = $("#slider").offset().left  - runnerWidth;
+  //     rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
+  // });
+  // function stepCalculate(divisions){
+  //     return $("#slider").outerWidth() / divisions;
+  // }
+  // function mouseMove(e){
+  //     if(e.pageX - runnerWidth <= leftBorder){
+  //         return leftBorder;
+  //     }
+  //     if(e.pageX + runnerWidth >= rightBorder){
+  //         return rightBorder - runnerWidth*2;
+  //     }
+  //     if(e.pageX <= currentPosition - step){
+  //         currentPosition -= step;
+  //     }
+  //     if(e.pageX >= currentPosition  + step){
+  //         currentPosition += step;
+  //     }
+  //     return currentPosition - runnerWidth;
+  // }
+  // function runnerMove(){
+  //     $("#runner").addClass('dragged');
+  //     $('#runner').parents().on('mousemove', function (e) {
+  //         $('.dragged').offset({
+  //             left: mouseMove(e)
+  //         })
+  //     });
+  //     $('#runner').parents().on('mouseup', function (e) {
+  //         $('#runner').removeClass('dragged');
+  //     });
+  // };
+  // $('body').on('mousedown', "#slider", function (e) {
+  //     runnerMove();
+  //     $("#runner").parents().on('mousedown', function(e){
+  //         $('.dragged').offset({
+  //             left: ((e.pageX - runnerWidth) / 12) * 12
+  //         })
+  //     });
+  // });
+  // $('body').on('mousedown', "#runner", function (e) {
+  //     runnerMove();
+  // });
 });
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -11300,7 +11398,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53735" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56899" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
