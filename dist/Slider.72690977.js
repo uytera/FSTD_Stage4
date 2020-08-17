@@ -11214,69 +11214,93 @@ var $ = require("jquery");
 
 var jQuery = require("jquery/dist/jquery");
 
+var Runner =
+/** @class */
+function () {
+  function Runner(runnerBar, runner, divisions) {
+    this.outerRunnerBar = runnerBar;
+    this.runnerElement = $(runner);
+    this.runnerRadius = this.runnerElement.outerWidth() / 2;
+    this.calculateBorders();
+    this.currentPosition = this.leftBorder;
+    this.step = this.stepCalculate(divisions);
+  }
+
+  Runner.prototype.calculateBorders = function () {
+    this.leftBorder = this.outerRunnerBar.leftOffset - this.runnerRadius;
+    this.rightBorder = this.leftBorder + this.outerRunnerBar.width + this.runnerRadius * 2;
+  };
+
+  Runner.prototype.stepCalculate = function (divisions) {
+    return this.outerRunnerBar.width / divisions;
+  };
+
+  return Runner;
+}();
+
+var RunnerBar =
+/** @class */
+function () {
+  function RunnerBar(element) {
+    this.barElement = $(element);
+    this.width = this.barElement.outerWidth();
+    this.leftOffset = this.barElement.offset().left;
+  }
+
+  return RunnerBar;
+}();
+
 ;
 
 (function ($, window, document, undefined) {
   var pluginName = 'runner',
       defaults = {
     propertyName: "value"
-  }; // конструктор плагина
+  };
 
   function Plugin(element, options) {
     this.element = element;
     this.options = $.extend({}, defaults, options);
     this._defaults = defaults;
-    this._name = pluginName; //alert(element.id);
-
+    this._name = pluginName;
     this.init();
-  } // Тут пишем код самого плагина
-  // Здесь у нас уже есть доступ к DOM, и входным параметрам
-  // через объект, типа this.element и this.options
-
+  }
 
   Plugin.prototype.init = function () {
     var sliderElement = this.element;
+    var sliderOptions = this.options;
     var divRunner = document.createElement('div');
     sliderElement.id = "slider";
     divRunner.id = "runner";
     sliderElement.appendChild(divRunner);
-    var sliderElementJ = $(sliderElement);
-    var divRunnerJ = $(divRunner);
-    var runnerWidth = divRunnerJ.outerWidth() / 2;
-    var leftBorder = sliderElementJ.offset().left - runnerWidth;
-    var rightBorder = leftBorder + sliderElementJ.outerWidth() + runnerWidth * 2;
-    var currentPosition = leftBorder;
-    var step = stepCalculate(10);
+    var runnerBar = new RunnerBar(sliderElement);
+    var runner = new Runner(runnerBar, divRunner, 10);
+    var divRunnerJ = runner.runnerElement;
     divRunnerJ.offset({
-      left: leftBorder
+      left: runner.leftBorder
     });
     $(window).resize(function () {
-      leftBorder = sliderElementJ.offset().left - runnerWidth;
-      rightBorder = leftBorder + sliderElementJ.outerWidth() + runnerWidth * 2;
+      runner.calculateBorders();
     });
 
-    function stepCalculate(divisions) {
-      return sliderElementJ.outerWidth() / divisions;
-    }
-
     function mouseMove(e) {
-      if (e.pageX - runnerWidth <= leftBorder) {
-        return leftBorder;
+      if (e.pageX - runner.runnerRadius <= runner.leftBorder) {
+        return runner.leftBorder;
       }
 
-      if (e.pageX + runnerWidth >= rightBorder) {
-        return rightBorder - runnerWidth * 2;
+      if (e.pageX + runner.runnerRadius >= runner.rightBorder) {
+        return runner.rightBorder - runner.runnerRadius * 2;
       }
 
-      if (e.pageX <= currentPosition - step) {
-        currentPosition -= step;
+      if (e.pageX <= runner.currentPosition - runner.step) {
+        runner.currentPosition -= runner.step;
       }
 
-      if (e.pageX >= currentPosition + step) {
-        currentPosition += step;
+      if (e.pageX >= runner.currentPosition + runner.step) {
+        runner.currentPosition += runner.step;
       }
 
-      return currentPosition - runnerWidth;
+      return runner.currentPosition - runner.runnerRadius;
     }
 
     function runnerMove() {
@@ -11296,16 +11320,14 @@ var jQuery = require("jquery/dist/jquery");
       runnerMove();
       divRunnerJ.parents().on('mousedown', function (e) {
         $('.dragged').offset({
-          left: (e.pageX - runnerWidth) / 12 * 12
+          left: (e.pageX - runner.runnerRadius) / 12 * 12
         });
       });
     });
     $('body').on('mousedown', "#runner", function (e) {
       runnerMove();
     });
-  }; // Простой декоратор конструктора,
-  // предотвращающий дублирование плагинов
-
+  };
 
   $.fn[pluginName] = function (options) {
     return this.each(function () {
@@ -11317,58 +11339,11 @@ var jQuery = require("jquery/dist/jquery");
 })(jQuery, window, document);
 
 $(document).ready(function () {
-  // var runnerWidth = $('#runner').outerWidth()/2;
-  // var leftBorder = $("#slider").offset().left - runnerWidth;
-  // var rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
-  // var currentPosition = leftBorder;
-  // var step = stepCalculate(10);
-  $('.middle').runner(); // $('#runner').offset({
-  //     left: leftBorder
-  // })
-  // $(window).resize(function(){
-  //     leftBorder = $("#slider").offset().left  - runnerWidth;
-  //     rightBorder = leftBorder + $("#slider").outerWidth() + runnerWidth * 2;
-  // });
-  // function stepCalculate(divisions){
-  //     return $("#slider").outerWidth() / divisions;
-  // }
-  // function mouseMove(e){
-  //     if(e.pageX - runnerWidth <= leftBorder){
-  //         return leftBorder;
-  //     }
-  //     if(e.pageX + runnerWidth >= rightBorder){
-  //         return rightBorder - runnerWidth*2;
-  //     }
-  //     if(e.pageX <= currentPosition - step){
-  //         currentPosition -= step;
-  //     }
-  //     if(e.pageX >= currentPosition  + step){
-  //         currentPosition += step;
-  //     }
-  //     return currentPosition - runnerWidth;
-  // }
-  // function runnerMove(){
-  //     $("#runner").addClass('dragged');
-  //     $('#runner').parents().on('mousemove', function (e) {
-  //         $('.dragged').offset({
-  //             left: mouseMove(e)
-  //         })
-  //     });
-  //     $('#runner').parents().on('mouseup', function (e) {
-  //         $('#runner').removeClass('dragged');
-  //     });
-  // };
-  // $('body').on('mousedown', "#slider", function (e) {
-  //     runnerMove();
-  //     $("#runner").parents().on('mousedown', function(e){
-  //         $('.dragged').offset({
-  //             left: ((e.pageX - runnerWidth) / 12) * 12
-  //         })
-  //     });
-  // });
-  // $('body').on('mousedown', "#runner", function (e) {
-  //     runnerMove();
-  // });
+  $('.middle').runner({
+    animate: "slow",
+    range: "min",
+    value: 50
+  });
 });
 },{"jquery":"../../../node_modules/jquery/dist/jquery.js","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -11398,7 +11373,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56899" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55772" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
