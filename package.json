@@ -21,5 +21,8 @@
   "homepage": "https://github.com/uytera/FSTD_Stage4#readme",
   "dependencies": {
     "@babel/compat-data": "^7.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.7"
   }
 }

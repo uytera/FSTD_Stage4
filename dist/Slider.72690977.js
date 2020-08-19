@@ -11221,19 +11221,31 @@ function () {
     this.outerRunnerBar = runnerBar;
     this.runnerElement = $(runner);
     this.runnerRadius = this.runnerElement.outerWidth() / 2;
+    this.stepCalculate(divisions);
     this.calculateBorders();
     this.currentPosition = this.leftBorder;
-    this.step = this.stepCalculate(divisions);
   }
 
   Runner.prototype.calculateBorders = function () {
-    this.leftBorder = this.outerRunnerBar.leftOffset - this.runnerRadius;
-    this.rightBorder = this.leftBorder + this.outerRunnerBar.width + this.runnerRadius * 2;
+    this.leftBorder = this.outerRunnerBar.leftOffset + this.steps[0] - this.runnerRadius;
+    this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
   };
 
   Runner.prototype.stepCalculate = function (divisions) {
-    return this.outerRunnerBar.width / divisions;
+    this.step = ~~(this.outerRunnerBar.width / divisions);
+    var indent = (this.outerRunnerBar.width - divisions * this.step) / 2;
+    this.steps = [];
+    this.steps.push(indent);
+
+    while (this.steps[this.steps.length - 1] + this.step <= this.outerRunnerBar.width) {
+      this.steps.push(this.steps[this.steps.length - 1] + this.step);
+    }
+
+    ;
+    this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
   };
+
+  Runner.prototype.placeCalculate = function () {};
 
   return Runner;
 }();
@@ -11274,7 +11286,7 @@ function () {
     divRunner.id = "runner";
     sliderElement.appendChild(divRunner);
     var runnerBar = new RunnerBar(sliderElement);
-    var runner = new Runner(runnerBar, divRunner, 10);
+    var runner = new Runner(runnerBar, divRunner, 4);
     var divRunnerJ = runner.runnerElement;
     divRunnerJ.offset({
       left: runner.leftBorder
@@ -11320,13 +11332,42 @@ function () {
       runnerMove();
       divRunnerJ.parents().on('mousedown', function (e) {
         $('.dragged').offset({
-          left: (e.pageX - runner.runnerRadius) / 12 * 12
+          left: clickCalculate(runner, e.pageX)
         });
       });
     });
     $('body').on('mousedown', "#runner", function (e) {
       runnerMove();
     });
+
+    function clickCalculate(runner, mousePosition) {
+      var leftOffset = runner.outerRunnerBar.leftOffset;
+      var index;
+      var relativeMousePosition = mousePosition - leftOffset;
+
+      for (index = 0; index < runner.steps.length; ++index) {
+        if (runner.steps[index] > relativeMousePosition) {
+          break;
+        }
+      }
+
+      if (index > 0 && runner.steps[index] - relativeMousePosition > relativeMousePosition - runner.steps[index - 1]) {
+        return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
+      }
+
+      return runner.steps[index] + leftOffset - runner.runnerRadius;
+    }
+
+    function buildMarks(runner) {
+      for (var index = 0; index < runner.steps.length; ++index) {
+        var mark = document.createElement('div');
+        mark.classList.add("mark");
+        $(mark).css('left', runner.steps[index] + 'px');
+        runner.outerRunnerBar.barElement.append(mark);
+      }
+    }
+
+    buildMarks(runner);
   };
 
   $.fn[pluginName] = function (options) {
@@ -11373,7 +11414,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55772" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51478" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

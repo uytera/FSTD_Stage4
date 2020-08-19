@@ -1,11 +1,12 @@
 #slider {
     cursor: pointer;
-    border: 2px solid grey;
-    border-radius: 10px; 
+    /*border: 2px solid grey;
+    border-radius: 10px;*/
     width: 200px;
     height: 10px;
     margin-top: 300px;
     position: relative;
+    background-color: grey;
 }
 
 #slider #runner{
@@ -19,6 +20,14 @@
     top: -5px;
     left: 0px;
 }
+
+#slider .mark{
+    width: 2px;
+    height: 16px;
+    background-color: blue;
+    position: absolute;
+}
+
 
 #slider #runner .dragged {
     background-color: blue !important;
