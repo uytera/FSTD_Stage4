@@ -11217,13 +11217,18 @@ var jQuery = require("jquery/dist/jquery");
 var Runner =
 /** @class */
 function () {
-  function Runner(runnerBar, runner, divisions) {
+  function Runner(runnerBar, runner, divisions, startPosition) {
     this.outerRunnerBar = runnerBar;
     this.runnerElement = $(runner);
     this.runnerRadius = this.runnerElement.outerWidth() / 2;
     this.stepCalculate(divisions);
     this.calculateBorders();
-    this.currentPosition = this.leftBorder;
+
+    if (this.steps.indexOf(startPosition) != -1) {
+      this.currentPositionIndex = this.steps.indexOf(startPosition);
+    } else {
+      this.currentPositionIndex = 0;
+    }
   }
 
   Runner.prototype.calculateBorders = function () {
@@ -11244,8 +11249,6 @@ function () {
     ;
     this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
   };
-
-  Runner.prototype.placeCalculate = function () {};
 
   return Runner;
 }();
@@ -11286,33 +11289,29 @@ function () {
     divRunner.id = "runner";
     sliderElement.appendChild(divRunner);
     var runnerBar = new RunnerBar(sliderElement);
-    var runner = new Runner(runnerBar, divRunner, 4);
+    var runner = new Runner(runnerBar, divRunner, sliderOptions.divisions, sliderOptions.startPosition);
     var divRunnerJ = runner.runnerElement;
     divRunnerJ.offset({
-      left: runner.leftBorder
+      left: runner.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
     });
     $(window).resize(function () {
       runner.calculateBorders();
     });
 
     function mouseMove(e) {
-      if (e.pageX - runner.runnerRadius <= runner.leftBorder) {
-        return runner.leftBorder;
+      var index = runner.currentPositionIndex;
+      var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset;
+
+      if (relativeMousePosition >= runner.steps[index + 1] - 10 && relativeMousePosition <= runner.steps[index + 1] + 10) {
+        index += 1;
       }
 
-      if (e.pageX + runner.runnerRadius >= runner.rightBorder) {
-        return runner.rightBorder - runner.runnerRadius * 2;
+      if (relativeMousePosition >= runner.steps[index - 1] - 10 && relativeMousePosition <= runner.steps[index - 1] + 10) {
+        index -= 1;
       }
 
-      if (e.pageX <= runner.currentPosition - runner.step) {
-        runner.currentPosition -= runner.step;
-      }
-
-      if (e.pageX >= runner.currentPosition + runner.step) {
-        runner.currentPosition += runner.step;
-      }
-
-      return runner.currentPosition - runner.runnerRadius;
+      runner.currentPositionIndex = index;
+      return runner.steps[index] + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
     }
 
     function runnerMove() {
@@ -11355,6 +11354,7 @@ function () {
         return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
       }
 
+      runner.currentPositionIndex = index;
       return runner.steps[index] + leftOffset - runner.runnerRadius;
     }
 
@@ -11381,9 +11381,8 @@ function () {
 
 $(document).ready(function () {
   $('.middle').runner({
-    animate: "slow",
-    range: "min",
-    value: 50
+    divisions: 5,
+    startPosition: 0
   });
 });
 },{"jquery":"../../../node_modules/jquery/dist/jquery.js","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -11414,7 +11413,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51478" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51404" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

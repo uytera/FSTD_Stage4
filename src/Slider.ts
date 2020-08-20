@@ -8,16 +8,22 @@ class Runner {
     leftBorder!: number;
     rightBorder!: number;
     steps!: Array<number>;
-    currentPosition: number;
+    currentPositionIndex: number;
     step!: number;
 
-    constructor(runnerBar: RunnerBar, runner: HTMLElement, divisions: number){
+    constructor(runnerBar: RunnerBar, runner: HTMLElement, divisions: number, startPosition: number){
         this.outerRunnerBar = runnerBar;
         this.runnerElement = $(runner);
         this.runnerRadius = this.runnerElement.outerWidth()!/2
         this.stepCalculate(divisions);
         this.calculateBorders();
-        this.currentPosition = this.leftBorder;
+
+        if(this.steps.indexOf(startPosition) != -1){
+            this.currentPositionIndex = this.steps.indexOf(startPosition);
+        }
+        else {
+            this.currentPositionIndex = 0;
+        }
     }
 
     calculateBorders(){
@@ -36,10 +42,6 @@ class Runner {
         };
 
         this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
-    }
-
-    placeCalculate(){
-        
     }
 }
 
@@ -79,12 +81,12 @@ class RunnerBar {
         sliderElement.appendChild(divRunner);
 
         var runnerBar = new RunnerBar(sliderElement);
-        var runner = new Runner(runnerBar, divRunner, 4)
+        var runner = new Runner(runnerBar, divRunner, sliderOptions.divisions, sliderOptions.startPosition)
 
         var divRunnerJ = runner.runnerElement;
 
         divRunnerJ.offset({
-            left: runner.leftBorder
+            left: runner.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
         })
 
         $(window).resize(function(){
@@ -93,19 +95,18 @@ class RunnerBar {
 
         
         function mouseMove(e: MouseEvent){
-            if(e.pageX - runner.runnerRadius <= runner.leftBorder){
-                return runner.leftBorder;
+            var index = runner.currentPositionIndex;
+            var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset;
+
+            if((relativeMousePosition >=  runner.steps[index + 1] - 10) && (relativeMousePosition <=  runner.steps[index + 1] + 10)){
+                index += 1;
             }
-            if(e.pageX + runner.runnerRadius >= runner.rightBorder){
-                return runner.rightBorder - runner.runnerRadius*2;
+            if((relativeMousePosition >=  runner.steps[index - 1] - 10) && (relativeMousePosition <=  runner.steps[index - 1] + 10)){
+                index -= 1;
             }
-            if(e.pageX <= runner.currentPosition - runner.step){
-                runner.currentPosition -= runner.step;
-            }
-            if(e.pageX >= runner.currentPosition  + runner.step){
-                runner.currentPosition += runner.step;
-            }
-            return runner.currentPosition - runner.runnerRadius;
+
+            runner.currentPositionIndex = index;
+            return runner.steps[index] + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
         }
 
         function runnerMove(){
@@ -149,6 +150,7 @@ class RunnerBar {
             if(index > 0 && ((runner.steps[index] - relativeMousePosition) > (relativeMousePosition - runner.steps[index - 1]))){
                 return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
             }
+            runner.currentPositionIndex = index;
             return runner.steps[index] + leftOffset - runner.runnerRadius;
         }
 
@@ -175,8 +177,7 @@ class RunnerBar {
 
 $(document).ready(function () {
     $('.middle').runner({
-        animate: "slow",
-        range: "min",    
-        value: 50
+        divisions: 5,
+        startPosition: 0
     }); 
 });
