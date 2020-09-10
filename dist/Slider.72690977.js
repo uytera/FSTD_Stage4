@@ -11300,13 +11300,14 @@ function () {
 
     function mouseMove(e) {
       var index = runner.currentPositionIndex;
-      var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset;
+      var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset; //if((relativeMousePosition >=  runner.steps[index + 1] - 10) && (relativeMousePosition <=  runner.steps[index + 1] + 10)){
 
-      if (relativeMousePosition >= runner.steps[index + 1] - 10 && relativeMousePosition <= runner.steps[index + 1] + 10) {
+      if (relativeMousePosition >= runner.steps[index + 1] - 10) {
         index += 1;
-      }
+      } //if((relativeMousePosition >=  runner.steps[index - 1] - 10) && (relativeMousePosition <=  runner.steps[index - 1] + 10)){
 
-      if (relativeMousePosition >= runner.steps[index - 1] - 10 && relativeMousePosition <= runner.steps[index - 1] + 10) {
+
+      if (relativeMousePosition <= runner.steps[index - 1] + 10) {
         index -= 1;
       }
 
@@ -11381,7 +11382,7 @@ function () {
 
 $(document).ready(function () {
   $('.middle').runner({
-    divisions: 5,
+    divisions: 4,
     startPosition: 0
   });
 });
@@ -11413,7 +11414,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51404" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54852" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

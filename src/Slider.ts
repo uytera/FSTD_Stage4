@@ -98,10 +98,12 @@ class RunnerBar {
             var index = runner.currentPositionIndex;
             var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset;
 
-            if((relativeMousePosition >=  runner.steps[index + 1] - 10) && (relativeMousePosition <=  runner.steps[index + 1] + 10)){
+            //if((relativeMousePosition >=  runner.steps[index + 1] - 10) && (relativeMousePosition <=  runner.steps[index + 1] + 10)){
+            if(relativeMousePosition >=  runner.steps[index + 1] - 10) {
                 index += 1;
             }
-            if((relativeMousePosition >=  runner.steps[index - 1] - 10) && (relativeMousePosition <=  runner.steps[index - 1] + 10)){
+            //if((relativeMousePosition >=  runner.steps[index - 1] - 10) && (relativeMousePosition <=  runner.steps[index - 1] + 10)){
+            if(relativeMousePosition <=  runner.steps[index - 1] + 10){
                 index -= 1;
             }
 
@@ -177,7 +179,7 @@ class RunnerBar {
 
 $(document).ready(function () {
     $('.middle').runner({
-        divisions: 5,
+        divisions: 4,
         startPosition: 0
     }); 
 });
