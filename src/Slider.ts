@@ -10,6 +10,7 @@ class Runner {
     steps!: Array<number>;
     currentPositionIndex: number;
     step!: number;
+    sensativity!: number;
 
     constructor(runnerBar: RunnerBar, runner: HTMLElement, divisions: number, startPosition: number){
         this.outerRunnerBar = runnerBar;
@@ -42,6 +43,8 @@ class Runner {
         };
 
         this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
+
+        this.sensativity = this.steps[1]/2;
     }
 }
 
@@ -93,22 +96,34 @@ class RunnerBar {
             runner.calculateBorders();
         });
 
+        function positionCalculate(mousePosition: number, sensitivity: number){
+            var value;
+            var relativeMousePosition = mousePosition - runner.outerRunnerBar.leftOffset;
+
+            function findIndex(element, index, array){
+                return (relativeMousePosition >= element - sensitivity && relativeMousePosition <= element + sensitivity);
+            }
+
+            value = runner.steps.find(findIndex);
+
+            if(relativeMousePosition < runner.steps[0]){
+                value = runner.steps[0]
+            }
+            if(relativeMousePosition > runner.steps[runner.steps.length - 1]){
+                value = runner.steps[runner.steps.length - 1]
+            }
+
+            return value;
+        }
+
         
-        function mouseMove(e: MouseEvent){
-            var index = runner.currentPositionIndex;
-            var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset;
+        function mouseMove(runner: Runner, e: MouseEvent){
+            var value;
 
-            //if((relativeMousePosition >=  runner.steps[index + 1] - 10) && (relativeMousePosition <=  runner.steps[index + 1] + 10)){
-            if(relativeMousePosition >=  runner.steps[index + 1] - 10) {
-                index += 1;
-            }
-            //if((relativeMousePosition >=  runner.steps[index - 1] - 10) && (relativeMousePosition <=  runner.steps[index - 1] + 10)){
-            if(relativeMousePosition <=  runner.steps[index - 1] + 10){
-                index -= 1;
-            }
+            value = positionCalculate(e.pageX, runner.sensativity);
 
-            runner.currentPositionIndex = index;
-            return runner.steps[index] + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
+            runner.currentPositionIndex = runner.steps.indexOf(value);
+            return value + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
         }
 
         function runnerMove(){
@@ -116,7 +131,7 @@ class RunnerBar {
             
             divRunnerJ.parents().on('mousemove', function (e) {
                 $('.dragged').offset({
-                    left: mouseMove(e)
+                    left: mouseMove(runner, e)
                 })
             });
 
@@ -130,7 +145,7 @@ class RunnerBar {
 
             divRunnerJ.parents().on('mousedown', function(e){
                 $('.dragged').offset({
-                    left: clickCalculate(runner, e.pageX)
+                    left: mouseMove(runner, e)
                 })
             });
         });
@@ -139,22 +154,25 @@ class RunnerBar {
             runnerMove();
         });
 
-        function clickCalculate(runner: Runner, mousePosition: number){
-            var leftOffset = runner.outerRunnerBar.leftOffset;
-            var index!: number;
-            var relativeMousePosition = mousePosition - leftOffset;
+        // function clickCalculate(runner: Runner, mousePosition: number){
+        //     var leftOffset = runner.outerRunnerBar.leftOffset;
+        //     var index!: number;
+        //     var relativeMousePosition = mousePosition - leftOffset;
 
-            for (index = 0; index < runner.steps.length; ++index) {
-                if(runner.steps[index] > relativeMousePosition){
-                    break;
-                }
-            }
-            if(index > 0 && ((runner.steps[index] - relativeMousePosition) > (relativeMousePosition - runner.steps[index - 1]))){
-                return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
-            }
-            runner.currentPositionIndex = index;
-            return runner.steps[index] + leftOffset - runner.runnerRadius;
-        }
+        //     positionCalculate
+
+        //     for (index = 0; index < runner.steps.length; ++index) {
+        //         if(runner.steps[index] > relativeMousePosition){
+        //             break;
+        //         }
+        //     }
+        //     if(index > 0 && ((runner.steps[index] - relativeMousePosition) > (relativeMousePosition - runner.steps[index - 1]))){
+        //         return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
+        //     }
+
+        //     runner.currentPositionIndex = index;
+        //     return runner.steps[index] + leftOffset - runner.runnerRadius;
+        // }
 
         function buildMarks(runner: Runner){
             for (var index = 0; index < runner.steps.length; ++index) {
@@ -179,7 +197,7 @@ class RunnerBar {
 
 $(document).ready(function () {
     $('.middle').runner({
-        divisions: 4,
+        divisions: 3,
         startPosition: 0
     }); 
 });

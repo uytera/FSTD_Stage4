@@ -11248,6 +11248,7 @@ function () {
 
     ;
     this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
+    this.sensativity = this.steps[1] / 2;
   };
 
   return Runner;
@@ -11298,28 +11299,39 @@ function () {
       runner.calculateBorders();
     });
 
-    function mouseMove(e) {
-      var index = runner.currentPositionIndex;
-      var relativeMousePosition = e.pageX - runner.outerRunnerBar.leftOffset; //if((relativeMousePosition >=  runner.steps[index + 1] - 10) && (relativeMousePosition <=  runner.steps[index + 1] + 10)){
+    function positionCalculate(mousePosition, sensitivity) {
+      var value;
+      var relativeMousePosition = mousePosition - runner.outerRunnerBar.leftOffset;
 
-      if (relativeMousePosition >= runner.steps[index + 1] - 10) {
-        index += 1;
-      } //if((relativeMousePosition >=  runner.steps[index - 1] - 10) && (relativeMousePosition <=  runner.steps[index - 1] + 10)){
-
-
-      if (relativeMousePosition <= runner.steps[index - 1] + 10) {
-        index -= 1;
+      function findIndex(element, index, array) {
+        return relativeMousePosition >= element - sensitivity && relativeMousePosition <= element + sensitivity;
       }
 
-      runner.currentPositionIndex = index;
-      return runner.steps[index] + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
+      value = runner.steps.find(findIndex);
+
+      if (relativeMousePosition < runner.steps[0]) {
+        value = runner.steps[0];
+      }
+
+      if (relativeMousePosition > runner.steps[runner.steps.length - 1]) {
+        value = runner.steps[runner.steps.length - 1];
+      }
+
+      return value;
+    }
+
+    function mouseMove(runner, e) {
+      var value;
+      value = positionCalculate(e.pageX, runner.sensativity);
+      runner.currentPositionIndex = runner.steps.indexOf(value);
+      return value + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
     }
 
     function runnerMove() {
       divRunnerJ.addClass('dragged');
       divRunnerJ.parents().on('mousemove', function (e) {
         $('.dragged').offset({
-          left: mouseMove(e)
+          left: mouseMove(runner, e)
         });
       });
       divRunnerJ.parents().on('mouseup', function (e) {
@@ -11332,32 +11344,28 @@ function () {
       runnerMove();
       divRunnerJ.parents().on('mousedown', function (e) {
         $('.dragged').offset({
-          left: clickCalculate(runner, e.pageX)
+          left: mouseMove(runner, e)
         });
       });
     });
     $('body').on('mousedown', "#runner", function (e) {
       runnerMove();
-    });
-
-    function clickCalculate(runner, mousePosition) {
-      var leftOffset = runner.outerRunnerBar.leftOffset;
-      var index;
-      var relativeMousePosition = mousePosition - leftOffset;
-
-      for (index = 0; index < runner.steps.length; ++index) {
-        if (runner.steps[index] > relativeMousePosition) {
-          break;
-        }
-      }
-
-      if (index > 0 && runner.steps[index] - relativeMousePosition > relativeMousePosition - runner.steps[index - 1]) {
-        return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
-      }
-
-      runner.currentPositionIndex = index;
-      return runner.steps[index] + leftOffset - runner.runnerRadius;
-    }
+    }); // function clickCalculate(runner: Runner, mousePosition: number){
+    //     var leftOffset = runner.outerRunnerBar.leftOffset;
+    //     var index!: number;
+    //     var relativeMousePosition = mousePosition - leftOffset;
+    //     positionCalculate
+    //     for (index = 0; index < runner.steps.length; ++index) {
+    //         if(runner.steps[index] > relativeMousePosition){
+    //             break;
+    //         }
+    //     }
+    //     if(index > 0 && ((runner.steps[index] - relativeMousePosition) > (relativeMousePosition - runner.steps[index - 1]))){
+    //         return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
+    //     }
+    //     runner.currentPositionIndex = index;
+    //     return runner.steps[index] + leftOffset - runner.runnerRadius;
+    // }
 
     function buildMarks(runner) {
       for (var index = 0; index < runner.steps.length; ++index) {
@@ -11382,7 +11390,7 @@ function () {
 
 $(document).ready(function () {
   $('.middle').runner({
-    divisions: 4,
+    divisions: 3,
     startPosition: 0
   });
 });
@@ -11414,7 +11422,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54852" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53419" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
