@@ -11217,11 +11217,12 @@ var jQuery = require("jquery/dist/jquery");
 var Runner =
 /** @class */
 function () {
-  function Runner(runnerBar, runner, divisions, startPosition) {
+  function Runner(runnerBar, runner, leftRagneBorder, rightRagneBorder, startPosition) {
     this.outerRunnerBar = runnerBar;
     this.runnerElement = $(runner);
-    this.runnerRadius = this.runnerElement.outerWidth() / 2;
-    this.stepCalculate(divisions);
+    this.runnerRadius = this.runnerElement.outerWidth() / 2; //this.stepCalculateDivision(divisions);
+
+    this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
     this.calculateBorders();
 
     if (this.steps.indexOf(startPosition) != -1) {
@@ -11236,7 +11237,7 @@ function () {
     this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
   };
 
-  Runner.prototype.stepCalculate = function (divisions) {
+  Runner.prototype._stepCalculate = function (divisions) {
     this.step = ~~(this.outerRunnerBar.width / divisions);
     var indent = (this.outerRunnerBar.width - divisions * this.step) / 2;
     this.steps = [];
@@ -11249,6 +11250,25 @@ function () {
     ;
     this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
     this.sensativity = this.steps[1] / 2;
+  };
+
+  Runner.prototype.stepCalculateDivision = function (divisions) {
+    this._stepCalculate(divisions);
+  };
+
+  Runner.prototype.stepCalculateRange = function (leftRagneBorder, rightRagneBorder) {
+    var range = rightRagneBorder - leftRagneBorder;
+    var divisions;
+
+    if (range > this.outerRunnerBar.width) {
+      divisions = this.outerRunnerBar.width;
+    } else {
+      divisions = range;
+    }
+
+    this.stepValue = range / divisions;
+
+    this._stepCalculate(divisions);
   };
 
   return Runner;
@@ -11286,11 +11306,14 @@ function () {
     var sliderElement = this.element;
     var sliderOptions = this.options;
     var divRunner = document.createElement('div');
+    var divPresentation1 = document.createElement('div');
     sliderElement.id = "slider";
     divRunner.id = "runner";
+    divPresentation1.id = "presentation1";
     sliderElement.appendChild(divRunner);
+    sliderElement.appendChild(divPresentation1);
     var runnerBar = new RunnerBar(sliderElement);
-    var runner = new Runner(runnerBar, divRunner, sliderOptions.divisions, sliderOptions.startPosition);
+    var runner = new Runner(runnerBar, divRunner, sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
     var divRunnerJ = runner.runnerElement;
     divRunnerJ.offset({
       left: runner.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
@@ -11320,6 +11343,10 @@ function () {
       return value;
     }
 
+    function presentateValue(value) {
+      $('#slider #presentation1').text(value);
+    }
+
     function mouseMove(runner, e) {
       var value;
       value = positionCalculate(e.pageX, runner.sensativity);
@@ -11333,6 +11360,7 @@ function () {
         $('.dragged').offset({
           left: mouseMove(runner, e)
         });
+        presentateValue(runner.stepValue * runner.currentPositionIndex);
       });
       divRunnerJ.parents().on('mouseup', function (e) {
         divRunnerJ.removeClass('dragged');
@@ -11347,25 +11375,11 @@ function () {
           left: mouseMove(runner, e)
         });
       });
+      presentateValue(runner.stepValue * runner.currentPositionIndex);
     });
     $('body').on('mousedown', "#runner", function (e) {
       runnerMove();
-    }); // function clickCalculate(runner: Runner, mousePosition: number){
-    //     var leftOffset = runner.outerRunnerBar.leftOffset;
-    //     var index!: number;
-    //     var relativeMousePosition = mousePosition - leftOffset;
-    //     positionCalculate
-    //     for (index = 0; index < runner.steps.length; ++index) {
-    //         if(runner.steps[index] > relativeMousePosition){
-    //             break;
-    //         }
-    //     }
-    //     if(index > 0 && ((runner.steps[index] - relativeMousePosition) > (relativeMousePosition - runner.steps[index - 1]))){
-    //         return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
-    //     }
-    //     runner.currentPositionIndex = index;
-    //     return runner.steps[index] + leftOffset - runner.runnerRadius;
-    // }
+    });
 
     function buildMarks(runner) {
       for (var index = 0; index < runner.steps.length; ++index) {
@@ -11390,7 +11404,9 @@ function () {
 
 $(document).ready(function () {
   $('.middle').runner({
-    divisions: 3,
+    leftNumber: 1000,
+    rightNumber: 1300,
+    //divisions: 200,
     startPosition: 0
   });
 });
@@ -11422,7 +11438,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53419" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63935" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

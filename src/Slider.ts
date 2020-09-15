@@ -11,12 +11,14 @@ class Runner {
     currentPositionIndex: number;
     step!: number;
     sensativity!: number;
+    stepValue!: number;
 
-    constructor(runnerBar: RunnerBar, runner: HTMLElement, divisions: number, startPosition: number){
+    constructor(runnerBar: RunnerBar, runner: HTMLElement, leftRagneBorder: number, rightRagneBorder: number, startPosition: number){
         this.outerRunnerBar = runnerBar;
         this.runnerElement = $(runner);
         this.runnerRadius = this.runnerElement.outerWidth()!/2
-        this.stepCalculate(divisions);
+        //this.stepCalculateDivision(divisions);
+        this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
         this.calculateBorders();
 
         if(this.steps.indexOf(startPosition) != -1){
@@ -32,7 +34,7 @@ class Runner {
         this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
     }
 
-    stepCalculate(divisions: number){
+    private _stepCalculate(divisions: number){
         this.step = ~~(this.outerRunnerBar.width / divisions);
         var indent = (this.outerRunnerBar.width - divisions * this.step)/2;
         this.steps = [];
@@ -45,6 +47,26 @@ class Runner {
         this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
 
         this.sensativity = this.steps[1]/2;
+    }
+
+    stepCalculateDivision(divisions: number){
+        this._stepCalculate(divisions);
+    }
+
+    stepCalculateRange(leftRagneBorder: number, rightRagneBorder: number){
+        var range = rightRagneBorder - leftRagneBorder;
+        var divisions: number;
+
+        if(range > this.outerRunnerBar.width){
+            divisions = this.outerRunnerBar.width;
+        }
+        else{
+            divisions = range;
+        }
+
+        this.stepValue = range / divisions;
+
+        this._stepCalculate(divisions);
     }
 }
 
@@ -78,13 +100,16 @@ class RunnerBar {
         var sliderElement = this.element
         var sliderOptions = this.options
         var divRunner = document.createElement('div');
+        var divPresentation1 = document.createElement('div');
 
         sliderElement.id = "slider";
         divRunner.id = "runner";
+        divPresentation1.id = "presentation1";
         sliderElement.appendChild(divRunner);
+        sliderElement.appendChild(divPresentation1);
 
         var runnerBar = new RunnerBar(sliderElement);
-        var runner = new Runner(runnerBar, divRunner, sliderOptions.divisions, sliderOptions.startPosition)
+        var runner = new Runner(runnerBar, divRunner, sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition)
 
         var divRunnerJ = runner.runnerElement;
 
@@ -116,6 +141,10 @@ class RunnerBar {
             return value;
         }
 
+        function presentateValue(value: number){
+            $('#slider #presentation1').text(value);
+        }
+
         
         function mouseMove(runner: Runner, e: MouseEvent){
             var value;
@@ -133,6 +162,8 @@ class RunnerBar {
                 $('.dragged').offset({
                     left: mouseMove(runner, e)
                 })
+
+                presentateValue(runner.stepValue * runner.currentPositionIndex)
             });
 
             divRunnerJ.parents().on('mouseup', function (e) {
@@ -148,31 +179,13 @@ class RunnerBar {
                     left: mouseMove(runner, e)
                 })
             });
+
+            presentateValue(runner.stepValue * runner.currentPositionIndex)
         });
 
         $('body').on('mousedown', "#runner", function (e: MouseEvent) {
             runnerMove();
         });
-
-        // function clickCalculate(runner: Runner, mousePosition: number){
-        //     var leftOffset = runner.outerRunnerBar.leftOffset;
-        //     var index!: number;
-        //     var relativeMousePosition = mousePosition - leftOffset;
-
-        //     positionCalculate
-
-        //     for (index = 0; index < runner.steps.length; ++index) {
-        //         if(runner.steps[index] > relativeMousePosition){
-        //             break;
-        //         }
-        //     }
-        //     if(index > 0 && ((runner.steps[index] - relativeMousePosition) > (relativeMousePosition - runner.steps[index - 1]))){
-        //         return runner.steps[index - 1] + leftOffset - runner.runnerRadius;
-        //     }
-
-        //     runner.currentPositionIndex = index;
-        //     return runner.steps[index] + leftOffset - runner.runnerRadius;
-        // }
 
         function buildMarks(runner: Runner){
             for (var index = 0; index < runner.steps.length; ++index) {
@@ -197,7 +210,9 @@ class RunnerBar {
 
 $(document).ready(function () {
     $('.middle').runner({
-        divisions: 3,
+        leftNumber: 1000,
+        rightNumber: 1300,
+        //divisions: 200,
         startPosition: 0
     }); 
 });
