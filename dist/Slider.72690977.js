@@ -11286,6 +11286,16 @@ function () {
   return RunnerBar;
 }();
 
+var Representor =
+/** @class */
+function () {
+  function Representor(element) {
+    this.representorElement = $(element);
+  }
+
+  return Representor;
+}();
+
 ;
 
 (function ($, window, document, undefined) {
@@ -11314,7 +11324,9 @@ function () {
     sliderElement.appendChild(divPresentation1);
     var runnerBar = new RunnerBar(sliderElement);
     var runner = new Runner(runnerBar, divRunner, sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
+    var representor = new Representor(divPresentation1);
     var divRunnerJ = runner.runnerElement;
+    var representorElementJ = representor.representorElement;
     divRunnerJ.offset({
       left: runner.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
     });
@@ -11344,26 +11356,28 @@ function () {
     }
 
     function presentateValue(value) {
-      $('#slider #presentation1').text(value);
+      $('#slider #presentation1.changing').text(value);
     }
 
     function mouseMove(runner, e) {
       var value;
       value = positionCalculate(e.pageX, runner.sensativity);
       runner.currentPositionIndex = runner.steps.indexOf(value);
+      presentateValue(runner.stepValue * runner.currentPositionIndex);
       return value + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
     }
 
     function runnerMove() {
       divRunnerJ.addClass('dragged');
+      representorElementJ.addClass('changing');
       divRunnerJ.parents().on('mousemove', function (e) {
         $('.dragged').offset({
           left: mouseMove(runner, e)
         });
-        presentateValue(runner.stepValue * runner.currentPositionIndex);
       });
       divRunnerJ.parents().on('mouseup', function (e) {
         divRunnerJ.removeClass('dragged');
+        representorElementJ.removeClass('changing');
       });
     }
 
@@ -11375,7 +11389,6 @@ function () {
           left: mouseMove(runner, e)
         });
       });
-      presentateValue(runner.stepValue * runner.currentPositionIndex);
     });
     $('body').on('mousedown', "#runner", function (e) {
       runnerMove();
@@ -11405,7 +11418,7 @@ function () {
 $(document).ready(function () {
   $('.middle').runner({
     leftNumber: 1000,
-    rightNumber: 1300,
+    rightNumber: 1100,
     //divisions: 200,
     startPosition: 0
   });
@@ -11438,7 +11451,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63935" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55677" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

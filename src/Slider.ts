@@ -82,6 +82,14 @@ class RunnerBar {
     }
 }
 
+class Representor {
+    representorElement: JQuery;
+
+    constructor(element: HTMLElement){
+        this.representorElement = $(element);
+    }
+}
+
 ;(function ($, window, document, undefined) {
     var pluginName = 'runner',
         defaults = {
@@ -109,9 +117,11 @@ class RunnerBar {
         sliderElement.appendChild(divPresentation1);
 
         var runnerBar = new RunnerBar(sliderElement);
-        var runner = new Runner(runnerBar, divRunner, sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition)
+        var runner = new Runner(runnerBar, divRunner, sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
+        var representor = new Representor(divPresentation1);
 
         var divRunnerJ = runner.runnerElement;
+        var representorElementJ = representor.representorElement;
 
         divRunnerJ.offset({
             left: runner.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
@@ -142,32 +152,32 @@ class RunnerBar {
         }
 
         function presentateValue(value: number){
-            $('#slider #presentation1').text(value);
+            $('#slider #presentation1.changing').text(value);
         }
 
-        
         function mouseMove(runner: Runner, e: MouseEvent){
             var value;
-
             value = positionCalculate(e.pageX, runner.sensativity);
 
             runner.currentPositionIndex = runner.steps.indexOf(value);
+            presentateValue(runner.stepValue * runner.currentPositionIndex)
+
             return value + runner.outerRunnerBar.leftOffset - runner.runnerRadius;
         }
 
         function runnerMove(){
             divRunnerJ.addClass('dragged');
+            representorElementJ.addClass('changing')
             
             divRunnerJ.parents().on('mousemove', function (e) {
                 $('.dragged').offset({
                     left: mouseMove(runner, e)
                 })
-
-                presentateValue(runner.stepValue * runner.currentPositionIndex)
             });
 
             divRunnerJ.parents().on('mouseup', function (e) {
                 divRunnerJ.removeClass('dragged');
+                representorElementJ.removeClass('changing')
             });
         };
 
@@ -179,8 +189,6 @@ class RunnerBar {
                     left: mouseMove(runner, e)
                 })
             });
-
-            presentateValue(runner.stepValue * runner.currentPositionIndex)
         });
 
         $('body').on('mousedown', "#runner", function (e: MouseEvent) {
@@ -206,12 +214,13 @@ class RunnerBar {
             }
         });
     }
+    
 })(jQuery, window, document);
 
 $(document).ready(function () {
     $('.middle').runner({
         leftNumber: 1000,
-        rightNumber: 1300,
+        rightNumber: 1100, //проверить числа оканчивающиеся на 3
         //divisions: 200,
         startPosition: 0
     }); 
