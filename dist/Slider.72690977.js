@@ -11220,8 +11220,7 @@ function () {
   function Runner(runnerBar, runner, leftRagneBorder, rightRagneBorder, startPosition) {
     this.outerRunnerBar = runnerBar;
     this.runnerElement = $(runner);
-    this.runnerRadius = this.runnerElement.outerWidth() / 2; //this.stepCalculateDivision(divisions);
-
+    this.runnerRadius = this.runnerElement.outerWidth() / 2;
     this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
     this.calculateBorders();
 
@@ -11231,11 +11230,6 @@ function () {
       this.currentPositionIndex = 0;
     }
   }
-
-  Runner.prototype.calculateBorders = function () {
-    this.leftBorder = this.outerRunnerBar.leftOffset + this.steps[0] - this.runnerRadius;
-    this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
-  };
 
   Runner.prototype._stepCalculate = function (divisions) {
     this.step = ~~(this.outerRunnerBar.width / divisions);
@@ -11248,8 +11242,13 @@ function () {
     }
 
     ;
-    this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
+    this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent;
     this.sensativity = this.steps[1] / 2;
+  };
+
+  Runner.prototype.calculateBorders = function () {
+    this.leftBorder = this.outerRunnerBar.leftOffset + this.steps[0] - this.runnerRadius;
+    this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
   };
 
   Runner.prototype.stepCalculateDivision = function (divisions) {
@@ -11356,7 +11355,7 @@ function () {
     }
 
     function presentateValue(value) {
-      $('#slider #presentation1.changing').text(value);
+      $('#slider #presentation1.changing').text(Math.ceil(value));
     }
 
     function mouseMove(runner, e) {
@@ -11418,7 +11417,7 @@ function () {
 $(document).ready(function () {
   $('.middle').runner({
     leftNumber: 1000,
-    rightNumber: 1100,
+    rightNumber: 100379,
     //divisions: 200,
     startPosition: 0
   });
@@ -11451,7 +11450,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55677" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49332" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

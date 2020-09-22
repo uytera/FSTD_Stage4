@@ -7,17 +7,16 @@ class Runner {
     runnerRadius: number;
     leftBorder!: number;
     rightBorder!: number;
-    steps!: Array<number>;
     currentPositionIndex: number;
+    steps!: Array<number>;
     step!: number;
-    sensativity!: number;
     stepValue!: number;
+    sensativity!: number;
 
     constructor(runnerBar: RunnerBar, runner: HTMLElement, leftRagneBorder: number, rightRagneBorder: number, startPosition: number){
         this.outerRunnerBar = runnerBar;
         this.runnerElement = $(runner);
         this.runnerRadius = this.runnerElement.outerWidth()!/2
-        //this.stepCalculateDivision(divisions);
         this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
         this.calculateBorders();
 
@@ -27,11 +26,6 @@ class Runner {
         else {
             this.currentPositionIndex = 0;
         }
-    }
-
-    calculateBorders(){
-        this.leftBorder = this.outerRunnerBar.leftOffset + this.steps[0] - this.runnerRadius;
-        this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
     }
 
     private _stepCalculate(divisions: number){
@@ -44,9 +38,14 @@ class Runner {
             this.steps.push(this.steps[this.steps.length - 1] + this.step);
         };
 
-        this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent * 2;
+        this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent;
 
         this.sensativity = this.steps[1]/2;
+    }
+
+    calculateBorders(){
+        this.leftBorder = this.outerRunnerBar.leftOffset + this.steps[0] - this.runnerRadius;
+        this.rightBorder = this.outerRunnerBar.leftOffset + this.steps[this.steps.length - 1] + this.runnerRadius;
     }
 
     stepCalculateDivision(divisions: number){
@@ -152,7 +151,7 @@ class Representor {
         }
 
         function presentateValue(value: number){
-            $('#slider #presentation1.changing').text(value);
+            $('#slider #presentation1.changing').text(Math.ceil(value));
         }
 
         function mouseMove(runner: Runner, e: MouseEvent){
@@ -220,7 +219,7 @@ class Representor {
 $(document).ready(function () {
     $('.middle').runner({
         leftNumber: 1000,
-        rightNumber: 1100, //проверить числа оканчивающиеся на 3
+        rightNumber: 100379,
         //divisions: 200,
         startPosition: 0
     }); 
