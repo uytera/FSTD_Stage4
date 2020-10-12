@@ -1,4 +1,4 @@
-interface IRunnerModel{
+export default interface IRunnerModel{
     getMinorBorderNumber(): number;
     getMajorBorderNumber(): number;
     getRunnerNumber(): number;

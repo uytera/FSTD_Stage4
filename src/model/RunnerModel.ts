@@ -1,5 +1,6 @@
+import IRunnerModel from "./IRunnerModel";
 
-class RunnerModel implements IRunnerModel{
+export default class RunnerModel implements IRunnerModel{
     private minorBorderNumber: number;
     private majorBorderNumber: number;
     private runnerNumber: number;

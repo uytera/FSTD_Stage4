@@ -8,5 +8,5 @@ export default interface IRunnerView{
     presentateValue(value: number): void;
 
     //Event logic when moving the mouse
-    mouseMove(runner: Runner, e: MouseEvent): number;
+    mouseMove(e: MouseEvent): number;
 }

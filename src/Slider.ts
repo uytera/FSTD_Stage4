@@ -2,6 +2,11 @@ import $ = require("jquery");
 import RunnerBar from "./source/RunnerBar";
 import Runner from "./source/Runner";
 import Representor from "./source/Representor";
+import IRunnerModel from "./model/IRunnerModel";
+import IRunnerView from "./view/IRunnerView";
+import IRunnerPresentor from "./presentor/IRunnerPresentor";
+import RunnerModel from "./model/RunnerModel";
+import { RunnerPresentor } from "./presentor/RunnerPresentor";
 import RunnerView from "./view/RunnerView";
 
 var jQuery = require("jquery/dist/jquery");
@@ -32,17 +37,26 @@ var jQuery = require("jquery/dist/jquery");
         sliderElement.appendChild(divRunner);
         sliderElement.appendChild(divPresentation1);
 
-        var runnerBar = new RunnerBar(sliderElement);
-        var runner = new Runner(runnerBar, divRunner, sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
+        var runnerBar = new RunnerBar(sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber)
+        var runner = new Runner(runnerBar, divRunner, sliderOptions.startPosition);
         var representor = new Representor(divPresentation1);
 
         var divRunnerJ = runner.runnerElement;
         var representorElementJ = representor.representorElement;
+        
+        var model :IRunnerModel;
+        var model = new RunnerModel(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
 
-        var view = new RunnerView(runner);
+        var presentor :IRunnerPresentor;
+        var presentor = new RunnerPresentor(model);
+
+        var view :IRunnerView;
+        var view = new RunnerView(runner, presentor);
+
+        presentor.addView(view);
 
         divRunnerJ.offset({
-            left: runner.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
+            left: runner.outerRunnerBar.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
         })
 
         $(window).resize(function(){
@@ -55,7 +69,7 @@ var jQuery = require("jquery/dist/jquery");
             
             divRunnerJ.parents().on('mousemove', function (e) {
                 $('.dragged').offset({
-                    left: view.mouseMove(runner, e)
+                    left: view.mouseMove(e)
                 })
             });
 
@@ -79,16 +93,7 @@ var jQuery = require("jquery/dist/jquery");
             runnerMove();
         });
 
-        function buildMarks(runner: Runner){
-            for (var index = 0; index < runner.steps.length; ++index) {
-                var mark = document.createElement('div');
-                mark.classList.add("mark");
-                $(mark).css('left', runner.steps[index] + 'px');
-                runner.outerRunnerBar.barElement.append(mark);
-            }
-        }
-
-        buildMarks(runner);
+        view.buildMarks(runner);
     };
 
     $.fn[pluginName] = function (options: Object) {
@@ -105,7 +110,6 @@ $(document).ready(function () {
     $('.middle').runner({
         leftNumber: 1000,
         rightNumber: 100379,
-        //divisions: 200,
         startPosition: 0
     }); 
 });

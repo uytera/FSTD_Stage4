@@ -1,11 +1,21 @@
-class RunnerPresentor implements IRunnerPresentor{
-    
-    model: RunnerModel;
-    view: RunnerView;
+import $ = require("jquery");
+import IRunnerView from "../view/IRunnerView";
+import IRunnerModel from "../model/IRunnerModel";
+import IRunnerPresentor from "./IRunnerPresentor";
 
-    constructor(model: RunnerModel, view: RunnerView){
+
+export class RunnerPresentor implements IRunnerPresentor{
+    
+    model: IRunnerModel;
+    views: Array<IRunnerView>;
+
+    constructor(model: IRunnerModel){
         this.model = model;
-        this.view = view;
+        this.views = [];
+    }
+
+    addView(view: IRunnerView){
+        this.views.push(view);
     }
 
     changeMinorBorder(leftBorderNumber: number){
