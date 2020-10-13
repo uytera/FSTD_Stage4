@@ -26,23 +26,7 @@ var jQuery = require("jquery/dist/jquery");
     }
 
     Plugin.prototype.init = function () {
-        var sliderElement = this.element
         var sliderOptions = this.options
-        var divRunner = document.createElement('div');
-        var divPresentation1 = document.createElement('div');
-
-        sliderElement.id = "slider";
-        divRunner.id = "runner";
-        divPresentation1.id = "presentation1";
-        sliderElement.appendChild(divRunner);
-        sliderElement.appendChild(divPresentation1);
-
-        var runnerBar = new RunnerBar(sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber)
-        var runner = new Runner(runnerBar, divRunner, sliderOptions.startPosition);
-        var representor = new Representor(divPresentation1);
-
-        var divRunnerJ = runner.runnerElement;
-        var representorElementJ = representor.representorElement;
         
         var model :IRunnerModel;
         var model = new RunnerModel(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
@@ -51,47 +35,9 @@ var jQuery = require("jquery/dist/jquery");
         var presentor = new RunnerPresentor(model);
 
         var view :IRunnerView;
-        var view = new RunnerView(runner, presentor);
+        var view = new RunnerView(presentor, this.element, sliderOptions);
 
         presentor.addView(view);
-
-        divRunnerJ.offset({
-            left: runner.outerRunnerBar.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
-        })
-
-        $(window).resize(function(){
-            runner.calculateBorders();
-        });
-
-        function runnerMove(){
-            divRunnerJ.addClass('dragged');
-            representorElementJ.addClass('changing')
-            
-            divRunnerJ.parents().on('mousemove', function (e) {
-                $('.dragged').offset({
-                    left: view.mouseMove(e)
-                })
-            });
-
-            divRunnerJ.parents().on('mouseup', function (e) {
-                divRunnerJ.removeClass('dragged');
-                representorElementJ.removeClass('changing')
-            });
-        };
-
-        $('body').on('mousedown', "#slider", function (e: MouseEvent) {
-            runnerMove();
-
-            divRunnerJ.parents().on('mousedown', function(e){
-                $('.dragged').offset({
-                    left: view.mouseMove(runner, e)
-                })
-            });
-        });
-
-        $('body').on('mousedown', "#runner", function (e: MouseEvent) {
-            runnerMove();
-        });
 
         view.buildMarks(runner);
     };
@@ -110,6 +56,6 @@ $(document).ready(function () {
     $('.middle').runner({
         leftNumber: 1000,
         rightNumber: 100379,
-        startPosition: 0
+        startPosition: 40
     }); 
 });

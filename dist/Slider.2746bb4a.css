@@ -21,14 +21,27 @@
     left: 0px;
 }
 
-#slider #presentation1{
-    width: 20px;
-    height: 20px;
+#slider .presentor{
+    display: inline;
+    -webkit-user-select: none;
     background-color: white;
     border: 2px solid black;
     position: absolute;
-    top: 50px;
+}
+
+#slider #presentation1{
+    top: 20px;
     left: 10px;
+}
+
+#slider #presentation2{
+    top: 0px;
+    left: -50px;
+}
+
+#slider #presentation3{
+    top: 0px;
+    right: -50px;
 }
 
 #slider .mark{

@@ -11203,129 +11203,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{"process":"../../../AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"source/RunnerBar.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var $ = require("jquery");
-
-var RunnerBar =
-/** @class */
-function () {
-  function RunnerBar(element, leftRagneBorder, rightRagneBorder) {
-    this.barElement = $(element);
-    this.width = this.barElement.outerWidth();
-    this.leftOffset = this.barElement.offset().left;
-    this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
-  }
-
-  RunnerBar.prototype._stepCalculate = function (divisions) {
-    this.step = ~~(this.width / divisions);
-    var indent = (this.width - divisions * this.step) / 2;
-    this.steps = [];
-    this.steps.push(indent);
-
-    while (this.steps[this.steps.length - 1] + this.step <= this.width) {
-      this.steps.push(this.steps[this.steps.length - 1] + this.step);
-    }
-
-    ;
-    this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent;
-  };
-
-  RunnerBar.prototype.stepCalculateRange = function (leftRagneBorder, rightRagneBorder) {
-    var range = rightRagneBorder - leftRagneBorder;
-    var divisions;
-
-    if (range > this.width) {
-      divisions = this.width;
-    } else {
-      divisions = range;
-    }
-
-    this.stepValue = range / divisions;
-
-    this._stepCalculate(divisions);
-  };
-
-  RunnerBar.prototype.stepCalculateDivision = function (divisions) {
-    this._stepCalculate(divisions);
-  };
-
-  return RunnerBar;
-}();
-
-exports.default = RunnerBar;
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"source/Runner.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var $ = require("jquery");
-
-var Runner =
-/** @class */
-function () {
-  function Runner(runnerBar, runner, startPosition) {
-    this.outerRunnerBar = runnerBar;
-    this.runnerElement = $(runner);
-    this.runnerRadius = this.runnerElement.outerWidth() / 2; //this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
-
-    this.calculateBorders();
-    this.sensativity = this.outerRunnerBar.steps[1] / 2;
-
-    if (this.outerRunnerBar.steps.indexOf(startPosition) != -1) {
-      this.currentPositionIndex = this.outerRunnerBar.steps.indexOf(startPosition);
-    } else {
-      this.currentPositionIndex = 0;
-    }
-  } // private _stepCalculate(divisions: number){
-  //     this.step = ~~(this.outerRunnerBar.width / divisions);
-  //     var indent = (this.outerRunnerBar.width - divisions * this.step)/2;
-  //     this.steps = [];
-  //     this.steps.push(indent);
-  //     while(this.steps[this.steps.length - 1] + this.step <= this.outerRunnerBar.width){
-  //         this.steps.push(this.steps[this.steps.length - 1] + this.step);
-  //     };
-  //     this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent;
-  // }
-
-
-  Runner.prototype.calculateBorders = function () {
-    this.leftBorder = this.outerRunnerBar.leftOffset + this.outerRunnerBar.steps[0] - this.runnerRadius;
-    this.rightBorder = this.outerRunnerBar.leftOffset + this.outerRunnerBar.steps[this.outerRunnerBar.steps.length - 1] + this.runnerRadius;
-  };
-
-  return Runner;
-}();
-
-exports.default = Runner;
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"source/Representor.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var $ = require("jquery");
-
-var Representor =
-/** @class */
-function () {
-  function Representor(element) {
-    this.representorElement = $(element);
-  }
-
-  return Representor;
-}();
-
-exports.default = Representor;
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"model/RunnerModel.ts":[function(require,module,exports) {
+},{"process":"../../../AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"model/RunnerModel.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11417,7 +11295,7 @@ function () {
 }();
 
 exports.RunnerPresentor = RunnerPresentor;
-},{}],"view/RunnerView.ts":[function(require,module,exports) {
+},{}],"source/Runner.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11426,13 +11304,157 @@ Object.defineProperty(exports, "__esModule", {
 
 var $ = require("jquery");
 
+var Runner =
+/** @class */
+function () {
+  function Runner(runnerBar, runner, startPosition) {
+    this.outerRunnerBar = runnerBar;
+    this.runnerElement = $(runner);
+    this.runnerRadius = this.runnerElement.outerWidth() / 2;
+    this.calculateBorders();
+    this.sensativity = this.outerRunnerBar.steps[1] / 2;
+
+    if (this.outerRunnerBar.steps.indexOf(startPosition) != -1) {
+      this.currentPositionIndex = this.outerRunnerBar.steps.indexOf(startPosition);
+    } else {
+      this.currentPositionIndex = 0;
+    }
+  }
+
+  Runner.prototype.calculateBorders = function () {
+    this.leftBorder = this.outerRunnerBar.leftOffset + this.outerRunnerBar.steps[0] - this.runnerRadius;
+    this.rightBorder = this.outerRunnerBar.leftOffset + this.outerRunnerBar.steps[this.outerRunnerBar.steps.length - 1] + this.runnerRadius;
+  };
+
+  return Runner;
+}();
+
+exports.default = Runner;
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"source/RunnerBar.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var $ = require("jquery");
+
+var RunnerBar =
+/** @class */
+function () {
+  function RunnerBar(element, leftRagneBorder, rightRagneBorder) {
+    this.barElement = $(element);
+    this.width = this.barElement.outerWidth();
+    this.leftOffset = this.barElement.offset().left;
+    this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
+  }
+
+  RunnerBar.prototype._stepCalculate = function (divisions) {
+    this.step = ~~(this.width / divisions);
+    var indent = (this.width - divisions * this.step) / 2;
+    this.steps = [];
+    this.steps.push(indent);
+
+    while (this.steps[this.steps.length - 1] + this.step <= this.width) {
+      this.steps.push(this.steps[this.steps.length - 1] + this.step);
+    }
+
+    ;
+    this.steps[this.steps.length - 1] = this.steps[this.steps.length - 1] - indent;
+  };
+
+  RunnerBar.prototype.stepCalculateRange = function (leftRagneBorder, rightRagneBorder) {
+    var range = rightRagneBorder - leftRagneBorder;
+    var divisions;
+
+    if (range > this.width) {
+      divisions = this.width;
+    } else {
+      divisions = range;
+    }
+
+    this.stepValue = range / divisions;
+
+    this._stepCalculate(divisions);
+  };
+
+  RunnerBar.prototype.stepCalculateDivision = function (divisions) {
+    this._stepCalculate(divisions);
+  };
+
+  return RunnerBar;
+}();
+
+exports.default = RunnerBar;
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"source/Representor.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var $ = require("jquery");
+
+var Representor =
+/** @class */
+function () {
+  function Representor(element) {
+    this.representorElement = $(element);
+  }
+
+  return Representor;
+}();
+
+exports.default = Representor;
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"view/RunnerView.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var $ = require("jquery");
+
+var Runner_1 = __importDefault(require("../source/Runner"));
+
+var RunnerBar_1 = __importDefault(require("../source/RunnerBar"));
+
+var Representor_1 = __importDefault(require("../source/Representor"));
+
 var RunnerView =
 /** @class */
 function () {
-  function RunnerView(runner, presentor) {
-    this.runner = runner;
-    this.runnerBar = runner.outerRunnerBar;
+  function RunnerView(presentor, element, sliderOptions) {
+    this.sliderElement = element;
+    this.divRunner = document.createElement('div');
+    this.divPresentation1 = document.createElement('div');
+    this.divPresentation2 = document.createElement('div');
+    this.divPresentation3 = document.createElement('div');
+    this.sliderElement.id = "slider";
+    this.divRunner.id = "runner";
+    this.divPresentation1.id = "presentation1";
+    this.divPresentation1.classList.add("presentor");
+    this.divPresentation2.id = "presentation2";
+    this.divPresentation2.classList.add("presentor");
+    this.divPresentation3.id = "presentation3";
+    this.divPresentation3.classList.add("presentor");
+    this.sliderElement.appendChild(this.divRunner);
+    this.sliderElement.appendChild(this.divPresentation1);
+    this.sliderElement.appendChild(this.divPresentation2);
+    this.sliderElement.appendChild(this.divPresentation3);
     this.presentor = presentor;
+    this.runnerBar = new RunnerBar_1.default(this.sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber);
+    this.runner = new Runner_1.default(this.runnerBar, this.divRunner, sliderOptions.startPosition);
+    this.representor1 = new Representor_1.default(this.divPresentation1);
+    this.representor2 = new Representor_1.default(this.divPresentation2);
+    this.representor3 = new Representor_1.default(this.divPresentation3);
+    this.executeInitialPreparations();
   }
 
   RunnerView.prototype.positionCalculate = function (mousePosition, sensitivity) {
@@ -11460,6 +11482,48 @@ function () {
     $('#slider #presentation1.changing').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
   };
 
+  RunnerView.prototype.executeInitialPreparations = function () {
+    var viewThis = this;
+    var divRunnerJ = viewThis.runner.runnerElement;
+    var representorElementJ = viewThis.representor1.representorElement;
+    $('#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+    $('#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
+    $('#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
+    divRunnerJ.offset({
+      left: viewThis.runner.outerRunnerBar.steps[viewThis.runner.currentPositionIndex] + viewThis.runner.outerRunnerBar.leftOffset - viewThis.runner.runnerRadius
+    });
+    $(window).resize(function () {
+      viewThis.runner.calculateBorders();
+    });
+
+    function runnerMove() {
+      divRunnerJ.addClass('dragged');
+      representorElementJ.addClass('changing');
+      divRunnerJ.parents().on('mousemove', function (e) {
+        $('.dragged').offset({
+          left: viewThis.mouseMove(e)
+        });
+      });
+      divRunnerJ.parents().on('mouseup', function (e) {
+        divRunnerJ.removeClass('dragged');
+        representorElementJ.removeClass('changing');
+      });
+    }
+
+    ;
+    $('body').on('mousedown', "#slider", function (e) {
+      runnerMove();
+      divRunnerJ.parents().on('mousedown', function (e) {
+        $('.dragged').offset({
+          left: viewThis.mouseMove(e)
+        });
+      });
+    });
+    $('body').on('mousedown', "#runner", function (e) {
+      runnerMove();
+    });
+  };
+
   RunnerView.prototype.mouseMove = function (e) {
     var value;
     value = this.positionCalculate(e.pageX, this.runner.sensativity);
@@ -11482,7 +11546,7 @@ function () {
 }();
 
 exports.default = RunnerView;
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"Slider.ts":[function(require,module,exports) {
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js","../source/Runner":"source/Runner.ts","../source/RunnerBar":"source/RunnerBar.ts","../source/Representor":"source/Representor.ts"}],"Slider.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -11496,12 +11560,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var $ = require("jquery");
-
-var RunnerBar_1 = __importDefault(require("./source/RunnerBar"));
-
-var Runner_1 = __importDefault(require("./source/Runner"));
-
-var Representor_1 = __importDefault(require("./source/Representor"));
 
 var RunnerModel_1 = __importDefault(require("./model/RunnerModel"));
 
@@ -11528,60 +11586,14 @@ var jQuery = require("jquery/dist/jquery");
   }
 
   Plugin.prototype.init = function () {
-    var sliderElement = this.element;
     var sliderOptions = this.options;
-    var divRunner = document.createElement('div');
-    var divPresentation1 = document.createElement('div');
-    sliderElement.id = "slider";
-    divRunner.id = "runner";
-    divPresentation1.id = "presentation1";
-    sliderElement.appendChild(divRunner);
-    sliderElement.appendChild(divPresentation1);
-    var runnerBar = new RunnerBar_1.default(sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber);
-    var runner = new Runner_1.default(runnerBar, divRunner, sliderOptions.startPosition);
-    var representor = new Representor_1.default(divPresentation1);
-    var divRunnerJ = runner.runnerElement;
-    var representorElementJ = representor.representorElement;
     var model;
     var model = new RunnerModel_1.default(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
     var presentor;
     var presentor = new RunnerPresentor_1.RunnerPresentor(model);
     var view;
-    var view = new RunnerView_1.default(runner, presentor);
+    var view = new RunnerView_1.default(presentor, this.element, sliderOptions);
     presentor.addView(view);
-    divRunnerJ.offset({
-      left: runner.outerRunnerBar.steps[runner.currentPositionIndex] + runner.outerRunnerBar.leftOffset - runner.runnerRadius
-    });
-    $(window).resize(function () {
-      runner.calculateBorders();
-    });
-
-    function runnerMove() {
-      divRunnerJ.addClass('dragged');
-      representorElementJ.addClass('changing');
-      divRunnerJ.parents().on('mousemove', function (e) {
-        $('.dragged').offset({
-          left: view.mouseMove(e)
-        });
-      });
-      divRunnerJ.parents().on('mouseup', function (e) {
-        divRunnerJ.removeClass('dragged');
-        representorElementJ.removeClass('changing');
-      });
-    }
-
-    ;
-    $('body').on('mousedown', "#slider", function (e) {
-      runnerMove();
-      divRunnerJ.parents().on('mousedown', function (e) {
-        $('.dragged').offset({
-          left: view.mouseMove(runner, e)
-        });
-      });
-    });
-    $('body').on('mousedown', "#runner", function (e) {
-      runnerMove();
-    });
     view.buildMarks(runner);
   };
 
@@ -11598,10 +11610,10 @@ $(document).ready(function () {
   $('.middle').runner({
     leftNumber: 1000,
     rightNumber: 100379,
-    startPosition: 0
+    startPosition: 40
   });
 });
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js","./source/RunnerBar":"source/RunnerBar.ts","./source/Runner":"source/Runner.ts","./source/Representor":"source/Representor.ts","./model/RunnerModel":"model/RunnerModel.ts","./presentor/RunnerPresentor":"presentor/RunnerPresentor.ts","./view/RunnerView":"view/RunnerView.ts","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js","./model/RunnerModel":"model/RunnerModel.ts","./presentor/RunnerPresentor":"presentor/RunnerPresentor.ts","./view/RunnerView":"view/RunnerView.ts","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -11629,7 +11641,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54387" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62010" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
