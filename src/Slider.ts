@@ -7,7 +7,7 @@ import IRunnerView from "./view/IRunnerView";
 import IRunnerPresentor from "./presentor/IRunnerPresentor";
 import RunnerModel from "./model/RunnerModel";
 import { RunnerPresentor } from "./presentor/RunnerPresentor";
-import RunnerView from "./view/RunnerView";
+import HorizontalRunnerView from "./view/HorizontalRunnerView";
 
 var jQuery = require("jquery/dist/jquery");
 
@@ -35,7 +35,7 @@ var jQuery = require("jquery/dist/jquery");
         var presentor = new RunnerPresentor(model);
 
         var view :IRunnerView;
-        var view = new RunnerView(presentor, this.element, sliderOptions);
+        var view = new HorizontalRunnerView(presentor, this.element, sliderOptions);
 
         presentor.addView(view);
 
@@ -56,6 +56,12 @@ $(document).ready(function () {
     $('.middle').runner({
         leftNumber: 1000,
         rightNumber: 100379,
+        startPosition: 40
+    });
+
+    $('.middle2').runner({
+        leftNumber: 1000,
+        rightNumber: 50000,
         startPosition: 40
     }); 
 });

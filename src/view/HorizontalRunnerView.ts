@@ -5,11 +5,12 @@ import Runner from "../source/Runner";
 import RunnerBar from "../source/RunnerBar";
 import Representor from "../source/Representor"
 
-export default class RunnerView implements IRunnerView {
+export default class HorizontalRunnerView implements IRunnerView {
     runner!: Runner
     runnerBar!: RunnerBar
     presentor!: IRunnerPresentor
     sliderElement!: HTMLElement
+    sliderElementClass!: String
     sliderOptions!: Object
     divRunner!: HTMLElement
     divPresentation1!: HTMLElement
@@ -22,6 +23,7 @@ export default class RunnerView implements IRunnerView {
 
     constructor(presentor: IRunnerPresentor, element: HTMLElement, sliderOptions: Object){
         this.sliderElement = element;
+        this.sliderElementClass = element.classList.item(0)
         this.divRunner = document.createElement('div');
         this.divPresentation1 = document.createElement('div');
         this.divPresentation2 = document.createElement('div');
@@ -69,16 +71,16 @@ export default class RunnerView implements IRunnerView {
     }
 
     presentateValue(value: number){
-        $('#slider #presentation1.changing').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+        $("." + this.sliderElementClass + '#slider #presentation1.changing').text(Math.ceil(this.presentor.getMinorBorderNumber() + this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
     }
 
     executeInitialPreparations(){
         var viewThis = this;
         var divRunnerJ = viewThis.runner.runnerElement;
         var representorElementJ = viewThis.representor1.representorElement;
-        $('#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
-        $('#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
-        $('#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
+        $("." + this.sliderElementClass + '#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+        $("." + this.sliderElementClass + '#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
+        $("." + this.sliderElementClass + '#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
 
         divRunnerJ.offset({
             left: viewThis.runner.outerRunnerBar.steps[viewThis.runner.currentPositionIndex] + viewThis.runner.outerRunnerBar.leftOffset - viewThis.runner.runnerRadius
@@ -104,7 +106,7 @@ export default class RunnerView implements IRunnerView {
             });
         };
 
-        $('body').on('mousedown', "#slider", function (e: MouseEvent) {
+        $('body').on('mousedown', "." + this.sliderElementClass + "#slider", function (e: MouseEvent) {
             runnerMove();
 
             divRunnerJ.parents().on('mousedown', function(e){
@@ -114,7 +116,7 @@ export default class RunnerView implements IRunnerView {
             });
         });
 
-        $('body').on('mousedown', "#runner", function (e: MouseEvent) {
+        $('body').on('mousedown', "." + this.sliderElementClass + " #runner", function (e: MouseEvent) {
             runnerMove();
         });
     }

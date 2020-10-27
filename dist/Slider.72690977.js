@@ -11406,7 +11406,7 @@ function () {
 }();
 
 exports.default = Representor;
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"view/RunnerView.ts":[function(require,module,exports) {
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js"}],"view/HorizontalRunnerView.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -11427,11 +11427,12 @@ var RunnerBar_1 = __importDefault(require("../source/RunnerBar"));
 
 var Representor_1 = __importDefault(require("../source/Representor"));
 
-var RunnerView =
+var HorizontalRunnerView =
 /** @class */
 function () {
-  function RunnerView(presentor, element, sliderOptions) {
+  function HorizontalRunnerView(presentor, element, sliderOptions) {
     this.sliderElement = element;
+    this.sliderElementClass = element.classList.item(0);
     this.divRunner = document.createElement('div');
     this.divPresentation1 = document.createElement('div');
     this.divPresentation2 = document.createElement('div');
@@ -11457,7 +11458,7 @@ function () {
     this.executeInitialPreparations();
   }
 
-  RunnerView.prototype.positionCalculate = function (mousePosition, sensitivity) {
+  HorizontalRunnerView.prototype.positionCalculate = function (mousePosition, sensitivity) {
     var value;
     var relativeMousePosition = mousePosition - this.runnerBar.leftOffset;
 
@@ -11478,17 +11479,17 @@ function () {
     return value;
   };
 
-  RunnerView.prototype.presentateValue = function (value) {
-    $('#slider #presentation1.changing').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+  HorizontalRunnerView.prototype.presentateValue = function (value) {
+    $("." + this.sliderElementClass + '#slider #presentation1.changing').text(Math.ceil(this.presentor.getMinorBorderNumber() + this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
   };
 
-  RunnerView.prototype.executeInitialPreparations = function () {
+  HorizontalRunnerView.prototype.executeInitialPreparations = function () {
     var viewThis = this;
     var divRunnerJ = viewThis.runner.runnerElement;
     var representorElementJ = viewThis.representor1.representorElement;
-    $('#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
-    $('#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
-    $('#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
+    $("." + this.sliderElementClass + '#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+    $("." + this.sliderElementClass + '#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
+    $("." + this.sliderElementClass + '#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
     divRunnerJ.offset({
       left: viewThis.runner.outerRunnerBar.steps[viewThis.runner.currentPositionIndex] + viewThis.runner.outerRunnerBar.leftOffset - viewThis.runner.runnerRadius
     });
@@ -11511,7 +11512,7 @@ function () {
     }
 
     ;
-    $('body').on('mousedown', "#slider", function (e) {
+    $('body').on('mousedown', "." + this.sliderElementClass + "#slider", function (e) {
       runnerMove();
       divRunnerJ.parents().on('mousedown', function (e) {
         $('.dragged').offset({
@@ -11519,12 +11520,12 @@ function () {
         });
       });
     });
-    $('body').on('mousedown', "#runner", function (e) {
+    $('body').on('mousedown', "." + this.sliderElementClass + " #runner", function (e) {
       runnerMove();
     });
   };
 
-  RunnerView.prototype.mouseMove = function (e) {
+  HorizontalRunnerView.prototype.mouseMove = function (e) {
     var value;
     value = this.positionCalculate(e.pageX, this.runner.sensativity);
     this.runner.currentPositionIndex = this.runnerBar.steps.indexOf(value);
@@ -11533,7 +11534,7 @@ function () {
     return value + this.runnerBar.leftOffset - this.runner.runnerRadius;
   };
 
-  RunnerView.prototype.buildMarks = function () {
+  HorizontalRunnerView.prototype.buildMarks = function () {
     for (var index = 0; index < this.runnerBar.steps.length; ++index) {
       var mark = document.createElement('div');
       mark.classList.add("mark");
@@ -11542,10 +11543,10 @@ function () {
     }
   };
 
-  return RunnerView;
+  return HorizontalRunnerView;
 }();
 
-exports.default = RunnerView;
+exports.default = HorizontalRunnerView;
 },{"jquery":"../../../node_modules/jquery/dist/jquery.js","../source/Runner":"source/Runner.ts","../source/RunnerBar":"source/RunnerBar.ts","../source/Representor":"source/Representor.ts"}],"Slider.ts":[function(require,module,exports) {
 "use strict";
 
@@ -11565,7 +11566,7 @@ var RunnerModel_1 = __importDefault(require("./model/RunnerModel"));
 
 var RunnerPresentor_1 = require("./presentor/RunnerPresentor");
 
-var RunnerView_1 = __importDefault(require("./view/RunnerView"));
+var HorizontalRunnerView_1 = __importDefault(require("./view/HorizontalRunnerView"));
 
 var jQuery = require("jquery/dist/jquery");
 
@@ -11592,7 +11593,7 @@ var jQuery = require("jquery/dist/jquery");
     var presentor;
     var presentor = new RunnerPresentor_1.RunnerPresentor(model);
     var view;
-    var view = new RunnerView_1.default(presentor, this.element, sliderOptions);
+    var view = new HorizontalRunnerView_1.default(presentor, this.element, sliderOptions);
     presentor.addView(view);
     view.buildMarks(runner);
   };
@@ -11612,8 +11613,13 @@ $(document).ready(function () {
     rightNumber: 100379,
     startPosition: 40
   });
+  $('.middle2').runner({
+    leftNumber: 1000,
+    rightNumber: 50000,
+    startPosition: 40
+  });
 });
-},{"jquery":"../../../node_modules/jquery/dist/jquery.js","./model/RunnerModel":"model/RunnerModel.ts","./presentor/RunnerPresentor":"presentor/RunnerPresentor.ts","./view/RunnerView":"view/RunnerView.ts","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"jquery":"../../../node_modules/jquery/dist/jquery.js","./model/RunnerModel":"model/RunnerModel.ts","./presentor/RunnerPresentor":"presentor/RunnerPresentor.ts","./view/HorizontalRunnerView":"view/HorizontalRunnerView.ts","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -11641,7 +11647,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62010" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55136" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
