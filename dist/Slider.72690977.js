@@ -11312,7 +11312,6 @@ function () {
     this.runnerElement = $(runner);
     this.runnerRadius = this.runnerElement.outerWidth() / 2;
     this.calculateBorders();
-    this.sensativity = this.outerRunnerBar.steps[1] / 2;
 
     if (this.outerRunnerBar.steps.indexOf(startPosition) != -1) {
       this.currentPositionIndex = this.outerRunnerBar.steps.indexOf(startPosition);
@@ -11347,6 +11346,7 @@ function () {
     this.width = this.barElement.outerWidth();
     this.leftOffset = this.barElement.offset().left;
     this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
+    this.sensativity = this.steps[1] / 2;
   }
 
   RunnerBar.prototype._stepCalculate = function (divisions) {
@@ -11451,12 +11451,25 @@ function () {
     this.sliderElement.appendChild(this.divPresentation3);
     this.presentor = presentor;
     this.runnerBar = new RunnerBar_1.default(this.sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber);
-    this.runner = new Runner_1.default(this.runnerBar, this.divRunner, sliderOptions.startPosition);
+    var startPosition = this.calculateRunnerStartPosition(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition, this.runnerBar);
+    this.runner = new Runner_1.default(this.runnerBar, this.divRunner, startPosition);
     this.representor1 = new Representor_1.default(this.divPresentation1);
     this.representor2 = new Representor_1.default(this.divPresentation2);
     this.representor3 = new Representor_1.default(this.divPresentation3);
     this.executeInitialPreparations();
   }
+
+  HorizontalRunnerView.prototype.calculateRunnerStartPosition = function (minorBorder, majorBorder, startNumber, runnerBar) {
+    for (var index = 0; index < runnerBar.steps.length; index++) {
+      var curentValue = index * runnerBar.stepValue;
+
+      if (curentValue - runnerBar.stepValue / 2 <= startNumber && curentValue + runnerBar.stepValue / 2 >= startNumber) {
+        return index;
+      }
+    }
+
+    return 0;
+  };
 
   HorizontalRunnerView.prototype.positionCalculate = function (mousePosition, sensitivity) {
     var value;
@@ -11480,14 +11493,15 @@ function () {
   };
 
   HorizontalRunnerView.prototype.presentateValue = function (value) {
-    $("." + this.sliderElementClass + '#slider #presentation1.changing').text(Math.ceil(this.presentor.getMinorBorderNumber() + this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+    $("." + this.sliderElementClass + '#slider #presentation1.changing').text(Math.ceil(this.presentor.getMinorBorderNumber() + this.presentor.getRunnerNumber())); //* this.runnerBar.stepValue) 
   };
 
   HorizontalRunnerView.prototype.executeInitialPreparations = function () {
     var viewThis = this;
     var divRunnerJ = viewThis.runner.runnerElement;
     var representorElementJ = viewThis.representor1.representorElement;
-    $("." + this.sliderElementClass + '#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+    $("." + this.sliderElementClass + '#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber())); // * this.runnerBar.stepValue)
+
     $("." + this.sliderElementClass + '#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
     $("." + this.sliderElementClass + '#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
     divRunnerJ.offset({
@@ -11527,9 +11541,9 @@ function () {
 
   HorizontalRunnerView.prototype.mouseMove = function (e) {
     var value;
-    value = this.positionCalculate(e.pageX, this.runner.sensativity);
+    value = this.positionCalculate(e.pageX, this.runnerBar.sensativity);
     this.runner.currentPositionIndex = this.runnerBar.steps.indexOf(value);
-    this.presentor.changeRunnerNumber(this.runner.currentPositionIndex);
+    this.presentor.changeRunnerNumber(this.runner.currentPositionIndex * this.runnerBar.stepValue);
     this.presentateValue(this.runnerBar.stepValue * this.runner.currentPositionIndex);
     return value + this.runnerBar.leftOffset - this.runner.runnerRadius;
   };
@@ -11610,13 +11624,13 @@ var jQuery = require("jquery/dist/jquery");
 $(document).ready(function () {
   $('.middle').runner({
     leftNumber: 1000,
-    rightNumber: 100379,
-    startPosition: 40
+    rightNumber: 100000,
+    startPosition: 20500
   });
   $('.middle2').runner({
     leftNumber: 1000,
-    rightNumber: 50000,
-    startPosition: 40
+    rightNumber: 100000,
+    startPosition: 70890
   });
 });
 },{"jquery":"../../../node_modules/jquery/dist/jquery.js","./model/RunnerModel":"model/RunnerModel.ts","./presentor/RunnerPresentor":"presentor/RunnerPresentor.ts","./view/HorizontalRunnerView":"view/HorizontalRunnerView.ts","jquery/dist/jquery":"../../../node_modules/jquery/dist/jquery.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -11647,7 +11661,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55136" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52269" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

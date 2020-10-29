@@ -7,12 +7,14 @@ export default class RunnerBar {
     step!: number;
     steps!: Array<number>;
     stepValue!: number;
+    sensativity!: number;
 
     constructor(element: HTMLElement, leftRagneBorder: number, rightRagneBorder: number){
         this.barElement = $(element);
         this.width = this.barElement.outerWidth()!;
         this.leftOffset = this.barElement.offset()!.left;
         this.stepCalculateRange(leftRagneBorder, rightRagneBorder);
+        this.sensativity = this.steps[1]/2;
     }
 
     private _stepCalculate(divisions: number){
@@ -31,6 +33,7 @@ export default class RunnerBar {
     stepCalculateRange(leftRagneBorder: number, rightRagneBorder: number){
         var range = rightRagneBorder - leftRagneBorder;
         var divisions: number;
+        
 
         if(range > this.width){
             divisions = this.width;
@@ -38,7 +41,7 @@ export default class RunnerBar {
         else{
             divisions = range;
         }
-
+        
         this.stepValue = range / divisions;
 
         this._stepCalculate(divisions);

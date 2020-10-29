@@ -55,13 +55,13 @@ var jQuery = require("jquery/dist/jquery");
 $(document).ready(function () {
     $('.middle').runner({
         leftNumber: 1000,
-        rightNumber: 100379,
-        startPosition: 40
+        rightNumber: 100000,
+        startPosition: 20500
     });
 
     $('.middle2').runner({
         leftNumber: 1000,
-        rightNumber: 50000,
-        startPosition: 40
+        rightNumber: 100000,
+        startPosition: 70890
     }); 
 });

@@ -44,14 +44,29 @@ export default class HorizontalRunnerView implements IRunnerView {
         this.sliderElement.appendChild(this.divPresentation2);
         this.sliderElement.appendChild(this.divPresentation3);
         
+
+
         this.presentor = presentor
         this.runnerBar = new RunnerBar(this.sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber)
-        this.runner = new Runner(this.runnerBar, this.divRunner, sliderOptions.startPosition);
+
+        var startPosition = this.calculateRunnerStartPosition(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition, this.runnerBar)
+
+        this.runner = new Runner(this.runnerBar, this.divRunner, startPosition);
         this.representor1 = new Representor(this.divPresentation1);
         this.representor2 = new Representor(this.divPresentation2);
         this.representor3 = new Representor(this.divPresentation3);
         
         this.executeInitialPreparations();
+    }
+
+    calculateRunnerStartPosition(minorBorder: number, majorBorder: number, startNumber: number, runnerBar: RunnerBar){
+        for (let index = 0; index < runnerBar.steps.length; index++) {
+            var curentValue = index * runnerBar.stepValue;
+            if(curentValue - runnerBar.stepValue/2 <= startNumber && curentValue + runnerBar.stepValue/2 >= startNumber){
+                return index;
+            }      
+        }
+        return 0;
     }
 
     positionCalculate(mousePosition: number, sensitivity: number){
@@ -71,14 +86,14 @@ export default class HorizontalRunnerView implements IRunnerView {
     }
 
     presentateValue(value: number){
-        $("." + this.sliderElementClass + '#slider #presentation1.changing').text(Math.ceil(this.presentor.getMinorBorderNumber() + this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+        $("." + this.sliderElementClass + '#slider #presentation1.changing').text(Math.ceil(this.presentor.getMinorBorderNumber() + this.presentor.getRunnerNumber())); //* this.runnerBar.stepValue) 
     }
 
     executeInitialPreparations(){
         var viewThis = this;
         var divRunnerJ = viewThis.runner.runnerElement;
         var representorElementJ = viewThis.representor1.representorElement;
-        $("." + this.sliderElementClass + '#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber() * this.runnerBar.stepValue));
+        $("." + this.sliderElementClass + '#slider #presentation1').text(Math.ceil(this.presentor.getRunnerNumber())); // * this.runnerBar.stepValue)
         $("." + this.sliderElementClass + '#slider #presentation2').text(viewThis.presentor.getMinorBorderNumber());
         $("." + this.sliderElementClass + '#slider #presentation3').text(viewThis.presentor.getMajorBorderNumber());
 
@@ -123,9 +138,9 @@ export default class HorizontalRunnerView implements IRunnerView {
     
     mouseMove(e: MouseEvent){
         var value;
-        value = this.positionCalculate(e.pageX, this.runner.sensativity);
+        value = this.positionCalculate(e.pageX, this.runnerBar.sensativity);
         this.runner.currentPositionIndex = this.runnerBar.steps.indexOf(value);
-        this.presentor.changeRunnerNumber(this.runner.currentPositionIndex);
+        this.presentor.changeRunnerNumber(this.runner.currentPositionIndex * this.runnerBar.stepValue);
         this.presentateValue(this.runnerBar.stepValue * this.runner.currentPositionIndex)
         return value + this.runnerBar.leftOffset - this.runner.runnerRadius;
     }

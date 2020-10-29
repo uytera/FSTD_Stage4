@@ -9,14 +9,12 @@ export default class Runner {
     rightBorder!: number; //перенести в RunnerBar?
     currentPositionIndex: number;
     step!: number;
-    sensativity!: number;
 
     constructor(runnerBar: RunnerBar, runner: HTMLElement, startPosition: number){
         this.outerRunnerBar = runnerBar;
         this.runnerElement = $(runner);
         this.runnerRadius = this.runnerElement.outerWidth()!/2
         this.calculateBorders();
-        this.sensativity = this.outerRunnerBar.steps[1]/2;
 
 
         if(this.outerRunnerBar.steps.indexOf(startPosition) != -1){
