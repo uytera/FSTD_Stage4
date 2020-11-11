@@ -9,17 +9,24 @@ export default class HorizontalRunnerView implements IRunnerView {
     runner!: Runner
     runnerBar!: RunnerBar
     presentor!: IRunnerPresentor
+
     sliderElement!: HTMLElement
     sliderElementClass!: String
     sliderOptions!: Object
+
     divRunner!: HTMLElement
     divPresentation1!: HTMLElement
     divPresentation2!: HTMLElement
     divPresentation3!: HTMLElement
+
     representor1!: Representor
     representor2!: Representor
     representor3!: Representor
 
+    // startFunction!: Function
+    endFunction!: Function
+    startMoveFunction!: Function
+    endMoveFunction!: Function
 
     constructor(presentor: IRunnerPresentor, element: HTMLElement, sliderOptions: Object){
         this.sliderElement = element;
@@ -44,12 +51,16 @@ export default class HorizontalRunnerView implements IRunnerView {
         this.sliderElement.appendChild(this.divPresentation2);
         this.sliderElement.appendChild(this.divPresentation3);
         
+        // this.startFunction = function() {};
+        this.endFunction = function() {};
+        this.startMoveFunction = function() {};
+        this.endMoveFunction = function() {};
 
 
         this.presentor = presentor
-        this.runnerBar = new RunnerBar(this.sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber)
+        this.runnerBar = new RunnerBar(this.sliderElement, sliderOptions.minBorder, sliderOptions.maxBorder)
 
-        var startPosition = this.calculateRunnerStartPosition(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition, this.runnerBar)
+        var startPosition = this.calculateRunnerStartPosition(sliderOptions.minBorder, sliderOptions.maxBorder, sliderOptions.startPosition, this.runnerBar)
 
         this.runner = new Runner(this.runnerBar, this.divRunner, startPosition);
         this.representor1 = new Representor(this.divPresentation1);
@@ -57,6 +68,22 @@ export default class HorizontalRunnerView implements IRunnerView {
         this.representor3 = new Representor(this.divPresentation3);
         
         this.executeInitialPreparations();
+    }
+
+    // setStartFunction(startFunction: Function){
+    //     this.startFunction = startFunction
+    // }
+
+    setEndFunction(endFunction: Function){
+        this.endFunction = endFunction
+    }
+
+    setStartMoveFunction(startMoveFunction: Function){
+        this.startMoveFunction = startMoveFunction
+    }
+
+    setEndMoveFunction(endMoveFunction: Function){
+        this.endMoveFunction = endMoveFunction
     }
 
     calculateRunnerStartPosition(minorBorder: number, majorBorder: number, startNumber: number, runnerBar: RunnerBar){
@@ -106,6 +133,7 @@ export default class HorizontalRunnerView implements IRunnerView {
         });
 
         function runnerMove(){
+            viewThis.startMoveFunction()
             divRunnerJ.addClass('dragged');
             representorElementJ.addClass('changing')
             
@@ -116,8 +144,11 @@ export default class HorizontalRunnerView implements IRunnerView {
             });
 
             divRunnerJ.parents().on('mouseup', function (e) {
-                divRunnerJ.removeClass('dragged');
-                representorElementJ.removeClass('changing')
+                if(divRunnerJ.hasClass('dragged')){
+                    divRunnerJ.removeClass('dragged');
+                    representorElementJ.removeClass('changing')
+                    viewThis.endMoveFunction()
+                }
             });
         };
 
@@ -134,6 +165,8 @@ export default class HorizontalRunnerView implements IRunnerView {
         $('body').on('mousedown', "." + this.sliderElementClass + " #runner", function (e: MouseEvent) {
             runnerMove();
         });
+
+        this.startFunction();
     }
     
     mouseMove(e: MouseEvent){

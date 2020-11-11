@@ -11448,16 +11448,38 @@ function () {
     this.sliderElement.appendChild(this.divRunner);
     this.sliderElement.appendChild(this.divPresentation1);
     this.sliderElement.appendChild(this.divPresentation2);
-    this.sliderElement.appendChild(this.divPresentation3);
+    this.sliderElement.appendChild(this.divPresentation3); // this.startFunction = function() {};
+
+    this.endFunction = function () {};
+
+    this.startMoveFunction = function () {};
+
+    this.endMoveFunction = function () {};
+
     this.presentor = presentor;
-    this.runnerBar = new RunnerBar_1.default(this.sliderElement, sliderOptions.leftNumber, sliderOptions.rightNumber);
-    var startPosition = this.calculateRunnerStartPosition(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition, this.runnerBar);
+    this.runnerBar = new RunnerBar_1.default(this.sliderElement, sliderOptions.minBorder, sliderOptions.maxBorder);
+    var startPosition = this.calculateRunnerStartPosition(sliderOptions.minBorder, sliderOptions.maxBorder, sliderOptions.startPosition, this.runnerBar);
     this.runner = new Runner_1.default(this.runnerBar, this.divRunner, startPosition);
     this.representor1 = new Representor_1.default(this.divPresentation1);
     this.representor2 = new Representor_1.default(this.divPresentation2);
     this.representor3 = new Representor_1.default(this.divPresentation3);
     this.executeInitialPreparations();
-  }
+  } // setStartFunction(startFunction: Function){
+  //     this.startFunction = startFunction
+  // }
+
+
+  HorizontalRunnerView.prototype.setEndFunction = function (endFunction) {
+    this.endFunction = endFunction;
+  };
+
+  HorizontalRunnerView.prototype.setStartMoveFunction = function (startMoveFunction) {
+    this.startMoveFunction = startMoveFunction;
+  };
+
+  HorizontalRunnerView.prototype.setEndMoveFunction = function (endMoveFunction) {
+    this.endMoveFunction = endMoveFunction;
+  };
 
   HorizontalRunnerView.prototype.calculateRunnerStartPosition = function (minorBorder, majorBorder, startNumber, runnerBar) {
     for (var index = 0; index < runnerBar.steps.length; index++) {
@@ -11512,6 +11534,7 @@ function () {
     });
 
     function runnerMove() {
+      viewThis.startMoveFunction();
       divRunnerJ.addClass('dragged');
       representorElementJ.addClass('changing');
       divRunnerJ.parents().on('mousemove', function (e) {
@@ -11520,8 +11543,11 @@ function () {
         });
       });
       divRunnerJ.parents().on('mouseup', function (e) {
-        divRunnerJ.removeClass('dragged');
-        representorElementJ.removeClass('changing');
+        if (divRunnerJ.hasClass('dragged')) {
+          divRunnerJ.removeClass('dragged');
+          representorElementJ.removeClass('changing');
+          viewThis.endMoveFunction();
+        }
       });
     }
 
@@ -11537,6 +11563,7 @@ function () {
     $('body').on('mousedown', "." + this.sliderElementClass + " #runner", function (e) {
       runnerMove();
     });
+    this.startFunction();
   };
 
   HorizontalRunnerView.prototype.mouseMove = function (e) {
@@ -11603,11 +11630,28 @@ var jQuery = require("jquery/dist/jquery");
   Plugin.prototype.init = function () {
     var sliderOptions = this.options;
     var model;
-    var model = new RunnerModel_1.default(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
+    var model = new RunnerModel_1.default(sliderOptions.minBorder, sliderOptions.maxBorder, sliderOptions.startPosition);
     var presentor;
     var presentor = new RunnerPresentor_1.RunnerPresentor(model);
     var view;
     var view = new HorizontalRunnerView_1.default(presentor, this.element, sliderOptions);
+
+    if (sliderOptions.startFunction != null) {
+      sliderOptions.startFunction();
+    }
+
+    if (sliderOptions.endFunction != null) {
+      view.setEndFunction(sliderOptions.endFunction);
+    }
+
+    if (sliderOptions.endMoveFunction != null) {
+      view.setEndMoveFunction(sliderOptions.endMoveFunction);
+    }
+
+    if (sliderOptions.startMoveFunction != null) {
+      view.setStartMoveFunction(sliderOptions.startMoveFunction);
+    }
+
     presentor.addView(view);
     view.buildMarks(runner);
   };
@@ -11623,13 +11667,25 @@ var jQuery = require("jquery/dist/jquery");
 
 $(document).ready(function () {
   $('.middle').runner({
-    leftNumber: 1000,
-    rightNumber: 100000,
+    startFunction: function startFunction() {
+      alert("start1");
+    },
+    endMoveFunction: function endMoveFunction() {
+      alert("endMove1");
+    },
+    minBorder: 1000,
+    maxBorder: 100000,
     startPosition: 20500
   });
   $('.middle2').runner({
-    leftNumber: 1000,
-    rightNumber: 100000,
+    startFunction: function startFunction() {
+      alert("start2");
+    },
+    endMoveFunction: function endMoveFunction() {
+      alert("endMove2");
+    },
+    minBorder: 1000,
+    maxBorder: 100000,
     startPosition: 70890
   });
 });
@@ -11661,7 +11717,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52269" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58297" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -29,13 +29,27 @@ var jQuery = require("jquery/dist/jquery");
         var sliderOptions = this.options
         
         var model :IRunnerModel;
-        var model = new RunnerModel(sliderOptions.leftNumber, sliderOptions.rightNumber, sliderOptions.startPosition);
+        var model = new RunnerModel(sliderOptions.minBorder, sliderOptions.maxBorder, sliderOptions.startPosition);
 
         var presentor :IRunnerPresentor;
         var presentor = new RunnerPresentor(model);
 
         var view :IRunnerView;
         var view = new HorizontalRunnerView(presentor, this.element, sliderOptions);
+
+        if(sliderOptions.startFunction != null){
+            sliderOptions.startFunction()
+        }
+        if(sliderOptions.endFunction != null){
+            view.setEndFunction(sliderOptions.endFunction)
+        }
+
+        if(sliderOptions.endMoveFunction != null){
+            view.setEndMoveFunction(sliderOptions.endMoveFunction)
+        }
+        if(sliderOptions.startMoveFunction != null){
+            view.setStartMoveFunction(sliderOptions.startMoveFunction)
+        }      
 
         presentor.addView(view);
 
@@ -54,14 +68,18 @@ var jQuery = require("jquery/dist/jquery");
 
 $(document).ready(function () {
     $('.middle').runner({
-        leftNumber: 1000,
-        rightNumber: 100000,
+        startFunction: function(){ alert("start1") },
+        endMoveFunction: function(){ alert("endMove1") },
+        minBorder: 1000,
+        maxBorder: 100000,
         startPosition: 20500
     });
 
     $('.middle2').runner({
-        leftNumber: 1000,
-        rightNumber: 100000,
+        startFunction: function(){ alert("start2") },
+        endMoveFunction: function(){ alert("endMove2") },
+        minBorder: 1000,
+        maxBorder: 100000,
         startPosition: 70890
     }); 
 });

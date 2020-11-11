@@ -9,4 +9,12 @@ export default interface IRunnerView{
 
     //Event logic when moving the mouse
     mouseMove(e: MouseEvent): number;
+
+    // setStartFunction(startFunction: Function): void;
+
+    setEndFunction(startFunction: Function): void;
+
+    setStartMoveFunction(startFunction: Function): void;
+
+    setEndMoveFunction(endFunction: Function): void;
 }
